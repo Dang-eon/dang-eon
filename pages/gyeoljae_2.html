@@ -1,0 +1,1972 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>결재 - #상담실 풋잡</title>
+  <style>
+    :root {
+      /* Dark Theme */
+      --bg-primary: #313338;
+      --bg-secondary: #2b2d31;
+      --bg-tertiary: #1e1f22;
+      --text-normal: #dbdee1;
+      --text-muted: #949ba4;
+      --text-link: #00aff4;
+      --message-hover: #2e3035;
+      --border-semibold: #35363c;
+      --scroller-thumb: #1a1b1e;
+      --scroller-thumb-hover: #111214;
+      --bot-background: #4f46e5;
+      
+      --font-sans: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+    }
+
+    .theme-light {
+      /* Light Theme */
+      --bg-primary: #ffffff;
+      --bg-secondary: #f2f3f5;
+      --bg-tertiary: #e3e5e8;
+      --text-normal: #313338;
+      --text-muted: #4e5058;
+      --text-link: #4f46e5;
+      --message-hover: #f1f2f4;
+      --border-semibold: #e3e5e8;
+      --scroller-thumb: #b5bac1;
+      --scroller-thumb-hover: #8e9297;
+      --bot-background: #4f46e5;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--bg-primary);
+      color: var(--text-normal);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      transition: background-color 0.2s, color 0.2s;
+    }
+
+    /* Scrollbar Style */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+    ::-webkit-scrollbar-track {
+      background: transparent;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: var(--scroller-thumb);
+      border-radius: 4px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--scroller-thumb-hover);
+    }
+
+    /* Layout */
+    .app-container {
+      display: flex;
+      flex: 1;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    /* Left Sidenav */
+    .sidebar {
+      width: 280px;
+      background-color: var(--bg-secondary);
+      display: flex;
+      flex-direction: column;
+      border-right: 1px solid var(--border-semibold);
+      transition: background-color 0.2s, border-right-color 0.2s, margin-left 0.25s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.2s ease, width 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+      flex-shrink: 0;
+    }
+
+    .sidebar.collapsed {
+      margin-left: -280px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    @media (max-width: 768px) {
+      .sidebar {
+        position: fixed;
+        left: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 999;
+        margin-left: -280px;
+        opacity: 0;
+        pointer-events: none;
+        box-shadow: 4px 0 15px rgba(0,0,0,0.3);
+      }
+      
+      .sidebar.active {
+        margin-left: 0;
+        opacity: 1;
+        pointer-events: auto;
+      }
+    }
+
+    .sidebar-header {
+      padding: 16px;
+      height: 56px;
+      border-bottom: 1px solid var(--border-semibold);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-weight: bold;
+      font-size: 15px;
+    }
+
+    .server-name {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .sidebar-content {
+      flex: 1;
+      padding: 14px 8px;
+      overflow-y: auto;
+    }
+
+    .channel-header {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding-left: 8px;
+      margin-bottom: 6px;
+    }
+
+    .channel-item {
+      display: flex;
+      align-items: center;
+      padding: 6px 8px;
+      border-radius: 4px;
+      background-color: rgba(255, 255, 255, 0.05);
+      color: var(--text-normal);
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
+
+    .channel-hash {
+      color: var(--text-muted);
+      margin-right: 6px;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    /* Settings Box in Sidebar */
+    .filter-panel {
+      padding: 16px;
+      background-color: var(--bg-tertiary);
+      border-radius: 12px;
+      border: 1px solid var(--border-semibold);
+      margin-top: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .panel-title {
+      font-size: 11px;
+      font-weight: bold;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+
+    .filter-group {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .filter-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+
+    .filter-input {
+      background-color: var(--bg-primary);
+      color: var(--text-normal);
+      border: 1px solid var(--border-semibold);
+      border-radius: 8px;
+      padding: 8px 10px;
+      outline: none;
+      font-size: 13px;
+      transition: border-color 0.15s;
+    }
+
+    .filter-input:focus {
+      border-color: #4f46e5;
+    }
+
+    .btn-theme-toggle {
+      background-color: #4f46e5;
+      color: #ffffff;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 12px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      transition: background-color 0.15s;
+    }
+
+    .btn-theme-toggle:hover {
+      background-color: #4338ca;
+    }
+
+    /* Main Chat Area */
+    .main-workspace {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      background-color: var(--bg-primary);
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .top-bar {
+      height: 56px;
+      padding: 0 16px;
+      border-bottom: 1px solid var(--border-semibold);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+      transition: border-bottom-color 0.2s;
+    }
+
+    .top-bar-left {
+      display: flex;
+      align-items: center;
+      font-weight: bold;
+      font-size: 16px;
+    }
+
+    /* Sidebar Toggle Button styling */
+    .btn-sidebar-toggle {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      color: var(--text-normal);
+      margin-right: 12px;
+      transition: background-color 0.15s, color 0.15s;
+      outline: none;
+    }
+
+    .btn-sidebar-toggle:hover {
+      background-color: rgba(255, 255, 255, 0.08);
+    }
+
+    .theme-light .btn-sidebar-toggle:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    @media (max-width: 768px) {
+      .btn-sidebar-toggle {
+        display: flex !important;
+      }
+    }
+
+    .top-bar-hash {
+      color: var(--text-muted);
+      margin-right: 6px;
+      font-size: 20px;
+    }
+
+    .top-bar-desc {
+      color: var(--text-muted);
+      font-size: 12px;
+      font-weight: normal;
+      margin-left: 12px;
+      border-left: 1px solid var(--border-semibold);
+      padding-left: 12px;
+    }
+
+    /* Chat Messages Viewport */
+    .chat-scroller {
+      flex: 1;
+      overflow-y: auto;
+      overflow-x: hidden;
+      padding: 16px;
+    }
+
+    .chat-log {
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Chat intro banner */
+    .chat-banner {
+      padding: 32px 16px;
+      margin-bottom: 16px;
+      border-bottom: 1px solid var(--border-semibold);
+    }
+
+    .chat-banner-circle {
+      width: 68px;
+      height: 68px;
+      background-color: #4e5058;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 40px;
+      margin-bottom: 12px;
+    }
+
+    .chat-banner-title {
+      font-size: 32px;
+      font-weight: bold;
+      color: var(--text-normal);
+      margin-bottom: 8px;
+    }
+
+    .chat-banner-desc {
+      color: var(--text-muted);
+      font-size: 14px;
+    }
+
+    /* Message Styles */
+    .message {
+      display: flex;
+      padding: 4px 16px;
+      margin: 0 -16px;
+      position: relative;
+      word-wrap: break-word;
+      user-select: text;
+    }
+
+    .message:hover {
+      background-color: var(--message-hover);
+    }
+
+    .avatar-container {
+      margin-right: 16px;
+      margin-top: 2px;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .avatar-fallback {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-weight: bold;
+      font-size: 14px;
+      user-select: none;
+    }
+
+    .message-main {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .message-header {
+      display: flex;
+      align-items: baseline;
+      margin-bottom: 2px;
+    }
+
+    .username {
+      font-weight: 500;
+      font-size: 15px;
+      color: var(--text-normal);
+      cursor: pointer;
+    }
+
+    .username:hover {
+      text-decoration: underline;
+    }
+
+    .bot-tag {
+      background-color: var(--bot-background);
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 1px 4px;
+      border-radius: 3px;
+      margin-left: 4px;
+      vertical-align: middle;
+    }
+
+    .timestamp {
+      color: var(--text-muted);
+      font-size: 11px;
+      margin-left: 8px;
+      font-weight: normal;
+    }
+
+    .message-text {
+      color: var(--text-normal);
+      font-size: 14px;
+      line-height: 1.4;
+      white-space: pre-wrap;
+    }
+
+    /* Date Divider (Kakao/Line style) */
+    .date-divider {
+      display: flex;
+      justify-content: center;
+      margin: 20px 0;
+      user-select: none;
+    }
+
+    .date-divider-text {
+      background-color: var(--bg-tertiary);
+      color: var(--text-normal);
+      border: 1px solid var(--border-semibold);
+      font-size: 11px;
+      font-weight: bold;
+      padding: 6px 16px;
+      border-radius: 9999px;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    /* Bubble Styles */
+    .avatar-space {
+      width: 40px;
+      margin-right: 16px;
+      flex-shrink: 0;
+    }
+
+    .flex-row {
+      display: flex;
+      flex-direction: row;
+    }
+
+    .flex-items-end {
+      align-items: flex-end;
+    }
+
+    .bubble-and-time {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-end;
+      gap: 8px;
+      max-width: 75%;
+    }
+
+    .speech-bubble {
+      display: inline-block;
+      padding: 10px 14px;
+      max-width: 100%;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+      line-height: 1.5;
+      font-size: 13.5px;
+    }
+
+    /* Right Aligned Message Styles */
+    .message.align-right {
+      flex-direction: row-reverse;
+    }
+
+    .message.align-right .avatar-container {
+      margin-right: 0;
+      margin-left: 16px;
+    }
+
+    .message.align-right .avatar-space {
+      margin-right: 0;
+      margin-left: 16px;
+    }
+
+    .message.align-right .message-main {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+    }
+
+    .message.align-right .message-header {
+      flex-direction: row-reverse;
+    }
+
+    .message.align-right .username {
+      margin-right: 0;
+    }
+
+    .message.align-right .timestamp {
+      margin-left: 0;
+      margin-right: 8px;
+    }
+
+    .message.align-right .bubble-and-time {
+      flex-direction: row-reverse;
+    }
+
+    .bubble-content {
+      color: inherit;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    .message-timestamp-time {
+      font-size: 10px;
+      color: var(--text-muted);
+      user-select: none;
+      margin-bottom: 2px;
+      white-space: nowrap;
+    }
+
+    /* Filter user bubbles */
+    .message.consecutive-bubble {
+      padding: 2px 16px;
+    }
+
+    /* Rich content styles */
+    .attachments {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .attachment-image-wrapper {
+      max-width: 100%;
+      max-height: 350px;
+      overflow: hidden;
+      display: inline-block;
+    }
+
+    .attachment-image {
+      max-width: 100%;
+      max-height: 350px;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      cursor: pointer;
+      display: block;
+      transition: opacity 0.15s;
+    }
+
+    .attachment-image:hover {
+      opacity: 0.9;
+    }
+
+    /* Markdown helper elements inside message text */
+    strong {
+      font-weight: bold;
+    }
+    em {
+      font-style: italic;
+    }
+    u {
+      text-decoration: underline;
+    }
+    del {
+      text-decoration: line-through;
+    }
+
+    @keyframes searchFlashAnimation {
+      0% {
+        background-color: rgba(245, 158, 11, 0.35);
+        box-shadow: inset 0 0 16px rgba(245, 158, 11, 0.25);
+      }
+      50% {
+        background-color: rgba(245, 158, 11, 0.2);
+        box-shadow: inset 0 0 10px rgba(245, 158, 11, 0.15);
+      }
+      100% {
+        background-color: transparent;
+        box-shadow: none;
+      }
+    }
+
+    .message.msg-search-highlight {
+      animation: searchFlashAnimation 2.5s ease-in-out forwards !important;
+    }
+
+    /* Search Counter */
+    .search-status {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-align: right;
+      padding: 4px 16px;
+      background-color: var(--bg-secondary);
+      border-top: 1px solid var(--border-semibold);
+    }
+
+    /* Hover Embed Preview Card styles */
+    #hover-embed-card {
+      position: fixed;
+      display: none;
+      flex-direction: column;
+      gap: 8px;
+      width: 320px;
+      background-color: #1e1f22;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 8px;
+      padding: 12px;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+      z-index: 10000;
+      color: #dbdee1;
+      font-family: var(--font-sans);
+      pointer-events: none;
+      user-select: none;
+      box-sizing: border-box;
+    }
+
+    #hover-embed-card * {
+      box-sizing: border-box;
+    }
+
+    #hover-embed-card .hover-img-wrap {
+      width: 100%;
+      height: 150px;
+      overflow: hidden;
+      border-radius: 4px;
+      background-color: rgba(0, 0, 0, 0.4);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    #hover-embed-card .hover-img {
+      max-width: 100%;
+      max-height: 100%;
+      object-fit: contain;
+    }
+
+    #hover-embed-card .hover-badge {
+      font-weight: bold;
+      font-size: 9px;
+      color: #5865F2;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    #hover-embed-card .hover-title {
+      font-weight: bold;
+      font-size: 13px;
+      color: #ffffff;
+      line-height: 1.3;
+      margin-top: 2px;
+      word-break: break-all;
+    }
+
+    #hover-embed-card .hover-desc {
+      font-size: 11px;
+      color: #b5bac1;
+      line-height: 1.4;
+      margin-top: 6px;
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+
+    #hover-embed-card .hover-link {
+      font-size: 9px;
+      color: #949ba4;
+      font-family: monospace;
+      margin-top: 8px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      padding-top: 6px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+  </style>
+</head>
+<body class="theme-light">
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <div class="sidebar">
+      <div class="sidebar-header">
+        <span class="server-name">결재</span>
+      </div>
+      <div class="sidebar-content">
+        <div class="channel-header">채널 목록</div>
+        <div class="channel-item">
+          <span class="channel-hash">#</span>상담실 풋잡
+        </div>
+
+        <!-- Filter & Search Section -->
+        <div class="filter-panel">
+          <div class="panel-title">필터 및 검색</div>
+          
+          <div class="filter-group">
+            <span class="filter-label">단어 검색</span>
+            <input type="text" id="search-input" class="filter-input" placeholder="메시지 내용 검색..." oninput="filterMessages()">
+          </div>
+
+          <div class="filter-group" id="search-nav-group" style="display: none; margin-top: -4px; margin-bottom: 8px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; background: var(--bg-secondary); padding: 6px 10px; border-radius: 6px; border: 1px solid var(--border-semibold); font-size: 11px;">
+              <span id="search-match-count" style="font-weight: bold; color: var(--text-normal); font-family: monospace;">0 / 0</span>
+              <div style="display: flex; gap: 4px;">
+                <button onclick="navigateSearch(-1)" style="background: var(--bg-tertiary); border: 1px solid var(--border-semibold); cursor: pointer; color: var(--text-normal); font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; transition: opacity 0.15s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">◀ 이전</button>
+                <button onclick="navigateSearch(1)" style="background: var(--bg-tertiary); border: 1px solid var(--border-semibold); cursor: pointer; color: var(--text-normal); font-size: 10px; padding: 2px 8px; border-radius: 4px; font-weight: bold; transition: opacity 0.15s;" onmouseover="this.style.opacity='0.8'" onmouseout="this.style.opacity='1'">다음 ▶</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="filter-group">
+            <span class="filter-label">역할/작성자 필터</span>
+            <select id="user-filter" class="filter-input" onchange="filterMessages()">
+              <option value="">전체 사용자</option>
+              <option value="resident0502">밧</option>
+<option value="dang_eon">섭</option>
+            </select>
+          </div>
+
+          <button class="btn-theme-toggle" onclick="toggleTheme()">테마 변경</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="main-workspace">
+      <!-- Top header bar -->
+      <div class="top-bar">
+        <div class="top-bar-left">
+          <button onclick="toggleSidebar()" class="btn-sidebar-toggle" title="사이드바 열기/닫기">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <rect width="18" height="18" x="3" y="3" rx="2" />
+              <path d="M9 3v18" />
+            </svg>
+          </button>
+          <span class="top-bar-hash">#</span>
+          <span>상담실 풋잡</span>
+          <span class="top-bar-desc">채팅 백업 아카이브 - 총 58개의 메시지</span>
+        </div>
+      </div>
+
+      <!-- Scrollable Message List -->
+      <div class="chat-scroller">
+        <div class="chat-banner">
+          <div class="chat-banner-circle">#</div>
+          <h1 class="chat-banner-title">상담실 풋잡</h1>
+          <p class="chat-banner-desc">상담실에서 풋잡하고... 주접 왤케 많음 개웃기게</p>
+        </div>
+
+        <div class="chat-log" id="chat-log-container">
+          
+        <div class="date-divider select-none">
+          <span class="date-divider-text">2026년 5월 28일</span>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="2d4ffc55-67af-44ea-ba7f-aae6ca8cd788" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">앉아서 상담하는데 책상 밑에서</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="677620fa-cd4b-4750-a27c-36e3e609773b" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">큼큼ㅋㅋ</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:13</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="29a918c1-e609-46f9-b12e-02830b042612" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">와</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble align-right" data-username="dang_eon" data-id="6865aed3-a21e-41c9-b847-037c504e814a" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">이거19금이야ㅁㅊ</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:13</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="4dd3de38-0fc6-4e64-b318-27dd207b7dbf" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">맞아</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:13</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="278ba33d-239e-46df-ad43-4b1c78284b6d" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">풋잡같은것도 해라...</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble align-right" data-username="dang_eon" data-id="2af4998a-46d1-4c1e-a750-bdbf8d0bef06" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">못가게 막고</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:13</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="a50e16d1-04b2-49ae-9156-d406d29a6667" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">엄마........ㅠㅠㅠㅠㅠㅠㅠㅠ.ㅠ.ㅠ.ㅠ..ㅠ.ㅠ.ㅠ.ㅠ..ㅠ.ㅠㅠㅠㅠㅠㅠㅠ</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="89a89ae6-4c1a-4c89-8bf5-c491ca49165e" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">안녕하세요김드갈리아입니다.제특기는드가는것인데요 오늘따라더드가고싶네요 그러면바로드가보도록하겠습니다</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:13</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="8cf2398a-82ee-446e-9892-193d718dc6fa" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">꼴림치사랑</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:13</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="d387d656-75e8-4813-8740-bce084e0079c" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">으니 진짜 개좋음</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="80a2256c-43dd-4b25-b9cd-1e7cc6bc8f9f" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">이래도 되나</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="df2e0ff8-17eb-4462-a93b-3a89a9deb4b1" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">ㅋㅋ</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:13</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="4bf9eb6c-e5f6-41d5-859d-d64b22f20216" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">근데 구두 신고 밟아야되...</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="d6f5bd22-9914-4ab4-aa50-287824c08a84" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">젠장!!!!!!!!환자의혈중꼴림농도가급격히상승햇습니다!!!!!!!긴급야설을수혈해야해요!!!!!</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble align-right" data-username="dang_eon" data-id="c1b5a777-bdba-4926-9e84-f0e3bbba77e1" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">와 구두</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="145ea352-d066-493d-b40e-1a4e61ff7f07" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">어</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="da69c823-06d1-47c7-898b-7d14b7e1f13e" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">니천재냐</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="bc7be689-cb41-411e-89d7-b689bafa78a6" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">개웃겨</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="07f57d72-c7a9-4aed-80ae-b65c046efad8" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="dccf1858-7d2c-4f24-8cea-c3d83f26c04c" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">발로 해주는 건 너무 친절하잖아</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="2d5cd25b-fdea-47ac-9100-9599e62e5b97" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">밑으로는 이케이케 하는데 입으로는 환자분 상담에 집중하셔야죠<br /><br />{Reactions}<br />🫄</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="0802558b-3285-4127-a957-688bf3f072ec" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">사람취급 안해야됨</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="cdc56ec8-db09-4f66-92e8-b49484078ec2" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">히익...</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="7dc95a71-18d6-4bfb-b389-ca7490479635" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">아</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="177726c8-7d8e-43e4-abd8-2062a6163b14" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">너무좋아</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:14</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="83867d18-5f5e-47ad-a9e2-22bc48513084" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">잉태함</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:15</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="a21a3ab0-8166-4e60-aa2e-15c1bc6a7259" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">임신하고말앗구나</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:15</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="ddc6f818-8104-45eb-ab49-597f059508ab" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">좋아서</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:15</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="ca7afd9b-b9a3-462a-8507-94370a1a45f3" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">누구를...</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:15</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="9ff5e14a-3950-41ce-a22b-1c52c89126c8" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">아무도 알 수 없죠</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:15</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="efe97b67-8959-4572-97ae-cc81df48348e" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">확실히.</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:15</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="75765b90-982e-45d0-a3ae-097b57bfe6d9" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">아니 십마조 포상 미쳣나</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="6bf69451-d066-4c8a-8560-313115e56c1d" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">하하</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="0cd3865c-a296-4733-b21c-3c180e78b4f7" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">하하하하하하하하하</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="a62307cd-c3cd-4bb6-919e-2b8bdcf548fb" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">상담날 ㅈㄴ기대되겟다</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:15</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="86a30117-b953-4037-9151-d4f0c47c2029" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">상담때만 환자분에 존댓말에 사람취급해주느거같은데</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble align-right" data-username="dang_eon" data-id="2e77f4b7-f94c-4073-a23b-66deb0bccf49" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">행동은 전혀아님</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble align-right" data-username="dang_eon" data-id="3bbcbdc4-9f4a-43f4-a317-54411a56ead2" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">아앙~</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:16</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="b24048e8-3971-4281-bd93-3c91cc096f85" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">근데 ㄹㅇ 존대하면서 사람 취급은 안해주는 게</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="973af24c-9e47-4314-b5c2-ccb8664ae231" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">이게 너무 꼴림</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="451d0b1b-bc53-4d5a-aacf-e8eb7a73243e" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">뭔데~~~~~ㅠㅠㅠ</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:16</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="bc26fe84-ee31-4763-9754-b3cc38f86893" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">너네 뭔사이야~</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:16</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="419819a1-519f-4b41-95e3-15c2c44520fc" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">너무 꼴려서 응급0스 드가야됨</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="60856498-5d8b-4541-a0bf-5a97b5863582" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">발 밟는 것도 좋네</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="05a4df5b-3686-4783-8748-cc55e866227e" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">스니커즈 신거나 아님 뭐 상담실 드갈 때 슬리퍼 같은 걸로 갈아신었어서</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="a386c6b6-5bdc-4c97-8c80-f7a4d2cbe4f9" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">구두로 밟히면 아프겟죠</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="0c1ccfff-82a7-442a-abd7-ab750def62f4" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">하하</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:17</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="0f227610-f493-4a4e-a0f9-612875a45cab" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">하아아아아앙</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble align-right" data-username="dang_eon" data-id="d6ce3a50-88f1-43a9-a9cd-88d8d6d6acdf" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">절정에달하다</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:17</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="8c67705f-ae55-4379-a6ea-153c49e24413" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">아</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:18</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="d74d4e2f-0ab7-407a-8346-e6937f0aa1e6" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">가끔 힘조절 실패하면</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble align-right" data-username="dang_eon" data-id="4fa1ed41-97dc-473d-9e1d-ad6e09a6700d" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">양발 위로 피 스멀스멀 올라옴</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble align-right" data-username="dang_eon" data-id="dff3d512-d513-4a81-b0d4-21142a59babf" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">근데 둘 중 아무도 신경않슴</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:18</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="76d531dd-09c2-4440-9fe5-ba474008558f" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">😁😁😁😁😁😁😁😁😁😁😁😁🤟🤟🤟🤟🤟🤟</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:18</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group align-right" data-username="dang_eon" data-id="c1c27834-c637-4d64-a7f1-e9d53e4c2f04" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">섭</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-end;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">섭</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #f2f2f2; color: #0f172a; border-radius: 12px 4px 12px 12px;">
+            <div class="bubble-content">여기가 락페인가</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:18</span>
+        </div>
+      
+          </div>
+        </div>
+        <div class="message bubble-group " data-username="resident0502" data-id="91658cd3-e27b-4a3b-97eb-0b203e814291" data-embeds="[]">
+          <div class="avatar-container select-none">
+            <div class="avatar-fallback" style="background-color: #ed4245;">밧</div>
+          </div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            <h3 class="message-header select-none">
+              <span class="username font-bold" style="color: #dbdee1;">밧</span>
+              
+            </h3>
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 4px 12px 12px 12px;">
+            <div class="bubble-content">잠깐 하늘 봄</div>
+          </div>
+          
+        </div>
+      
+          </div>
+        </div>
+        <div class="message consecutive-bubble " data-username="resident0502" data-id="c9396600-7d25-4d59-b00d-da15ec4540c2" data-embeds="[]">
+          <div class="avatar-space"></div>
+          <div class="message-main font-sans" style="display: flex; flex-direction: column; gap: 6px; width: 100%; align-items: flex-start;">
+            
+        <div class="bubble-and-time flex-row flex-items-end" style="max-width: 75%;">
+          <div class="speech-bubble" style="background-color: #ffffff; color: #0f172a; border-radius: 12px;">
+            <div class="bubble-content">너무 꼴려서</div>
+          </div>
+          <span class="message-timestamp-time font-mono">오후 7:18</span>
+        </div>
+      
+          </div>
+        </div>
+        </div>
+      </div>
+
+      <!-- Bottom status bar -->
+      <div class="search-status" id="status-text">
+        총 58개의 메시지가 기록됨
+      </div>
+    </div>
+  </div>
+
+  <!-- Hover Embed Overlay Card -->
+  <div id="hover-embed-card">
+    <div class="hover-img-wrap" id="hover-img-wrap">
+      <img class="hover-img" id="hover-img" referrerpolicy="no-referrer" alt="Thumbnail" />
+    </div>
+    <div class="hover-title" id="hover-title"></div>
+    <div class="hover-desc" id="hover-desc"></div>
+    <div class="hover-link" id="hover-link"></div>
+  </div>
+
+  <script>
+    // Sidebar toggle and persistence
+    function toggleSidebar() {
+      const sidebar = document.querySelector('.sidebar');
+      if (window.innerWidth <= 768) {
+        sidebar.classList.toggle('active');
+        sidebar.classList.remove('collapsed');
+      } else {
+        sidebar.classList.toggle('collapsed');
+        sidebar.classList.remove('active');
+        try {
+          localStorage.setItem('sidebar_collapsed', sidebar.classList.contains('collapsed'));
+        } catch (e) {}
+      }
+    }
+
+    // Load sidebar state on startup
+    try {
+      if (window.innerWidth > 768) {
+        const isCollapsed = localStorage.getItem('sidebar_collapsed') === 'true';
+        if (isCollapsed) {
+          document.querySelector('.sidebar').classList.add('collapsed');
+        }
+      }
+    } catch (e) {}
+
+    // Close sidebar on mobile clicking workspace
+    document.addEventListener('click', function(e) {
+      if (window.innerWidth <= 768) {
+        const sidebar = document.querySelector('.sidebar');
+        const toggleBtn = document.querySelector('.btn-sidebar-toggle');
+        if (sidebar && sidebar.classList.contains('active') && !sidebar.contains(e.target) && toggleBtn && !toggleBtn.contains(e.target)) {
+          sidebar.classList.remove('active');
+        }
+      }
+    });
+
+    // Theme toggler
+    function toggleTheme() {
+      document.body.classList.toggle('theme-light');
+    }
+
+    // Interactive Real-time Message Filtering Rules
+    let searchMatches = [];
+    let activeMatchIndex = -1;
+
+    function filterMessages() {
+      const searchVal = document.getElementById('search-input').value.toLowerCase().trim();
+      const userVal = document.getElementById('user-filter').value;
+      const messages = document.querySelectorAll('.message');
+      const searchNavGroup = document.getElementById('search-nav-group');
+      
+      let visibleCount = 0;
+      searchMatches = [];
+
+      messages.forEach(msg => {
+        const text = msg.textContent.toLowerCase() || '';
+        const username = msg.getAttribute('data-username') || '';
+        const msgId = msg.getAttribute('data-id') || '';
+        
+        let matchesUser = true;
+
+        if (userVal !== '') {
+          matchesUser = (username === userVal);
+        }
+
+        if (matchesUser) {
+          msg.style.display = 'flex';
+          visibleCount++;
+          
+          if (searchVal !== '' && text.includes(searchVal)) {
+            searchMatches.push(msgId);
+          }
+        } else {
+          msg.style.display = 'none';
+        }
+      });
+
+      // Update status counter text / visibility
+      const statusText = document.getElementById('status-text');
+      if (searchVal !== '') {
+        searchNavGroup.style.display = 'block';
+        if (searchMatches.length > 0) {
+          activeMatchIndex = 0;
+          updateSearchUI();
+          scrollToMatch(searchMatches[0]);
+        } else {
+          activeMatchIndex = -1;
+          updateSearchUI();
+        }
+        statusText.textContent = '검색 결과: 총 ' + searchMatches.length + '개 매칭됨';
+      } else {
+        searchNavGroup.style.display = 'none';
+        activeMatchIndex = -1;
+        if (userVal !== '') {
+          statusText.textContent = '기록 내 유저 필터 적용됨 - ' + visibleCount + '개 메시지';
+        } else {
+          statusText.textContent = '총 ' + messages.length + '개의 메시지가 기록됨';
+        }
+      }
+    }
+
+    function updateSearchUI() {
+      const counterEl = document.getElementById('search-match-count');
+      if (searchMatches.length > 0) {
+        counterEl.textContent = (activeMatchIndex + 1) + ' / ' + searchMatches.length;
+      } else {
+        counterEl.textContent = '0 / 0';
+      }
+    }
+
+    function navigateSearch(direction) {
+      if (searchMatches.length === 0) return;
+      activeMatchIndex = (activeMatchIndex + direction + searchMatches.length) % searchMatches.length;
+      updateSearchUI();
+      scrollToMatch(searchMatches[activeMatchIndex]);
+    }
+
+    function scrollToMatch(msgId) {
+      const targetEl = document.querySelector('.message[data-id="' + msgId + '"]');
+      if (targetEl) {
+        targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        
+        targetEl.classList.remove('msg-search-highlight');
+        void targetEl.offsetHeight; // force reflow
+        targetEl.classList.add('msg-search-highlight');
+        
+        setTimeout(() => {
+          targetEl.classList.remove('msg-search-highlight');
+        }, 2500);
+      }
+    }
+
+    // Link Embed Hover script
+    (function() {
+      const hoverCard = document.getElementById('hover-embed-card');
+      const hoverImgWrap = document.getElementById('hover-img-wrap');
+      const hoverImg = document.getElementById('hover-img');
+      const hoverTitle = document.getElementById('hover-title');
+      const hoverDesc = document.getElementById('hover-desc');
+      const hoverLink = document.getElementById('hover-link');
+      
+      let isVisible = false;
+
+      document.addEventListener('mouseover', function(e) {
+        const anchor = e.target.closest('a');
+        if (!anchor) {
+          hoverCard.style.display = 'none';
+          isVisible = false;
+          return;
+        }
+
+        const messageEl = anchor.closest('.message');
+        if (!messageEl) return;
+
+        const embedsStr = messageEl.getAttribute('data-embeds');
+        if (!embedsStr) return;
+
+        try {
+          const embeds = JSON.parse(embedsStr);
+          if (!embeds || embeds.length === 0) return;
+
+          const href = anchor.getAttribute('href') || '';
+          const matchingEmbed = embeds.find(function(emb) {
+            return href.toLowerCase().includes(emb.linkUrl.toLowerCase()) || 
+                   emb.linkUrl.toLowerCase().includes(href.toLowerCase());
+          });
+
+          if (matchingEmbed) {
+            hoverTitle.textContent = matchingEmbed.title;
+            hoverDesc.textContent = matchingEmbed.description || '';
+            hoverLink.textContent = matchingEmbed.linkUrl;
+
+            if (matchingEmbed.imgUrl) {
+              hoverImg.src = matchingEmbed.imgUrl;
+              hoverImgWrap.style.display = 'flex';
+            } else {
+              hoverImgWrap.style.display = 'none';
+            }
+
+            hoverCard.style.display = 'flex';
+            isVisible = true;
+            positionCard(e.clientX, e.clientY);
+          }
+        } catch (err) {
+          console.error(err);
+        }
+      });
+
+      document.addEventListener('mousemove', function(e) {
+        const anchor = e.target.closest('a');
+        if (!anchor && isVisible) {
+          hoverCard.style.display = 'none';
+          isVisible = false;
+          return;
+        }
+        if (isVisible) {
+          positionCard(e.clientX, e.clientY);
+        }
+      });
+
+      document.addEventListener('mouseout', function(e) {
+        const related = e.relatedTarget;
+        if (!related || !related.closest('a')) {
+          hoverCard.style.display = 'none';
+          isVisible = false;
+        }
+      });
+
+      function positionCard(clientX, clientY) {
+        const cardWidth = 320;
+        const cardHeight = 280;
+        const posX = Math.min(clientX + 15, window.innerWidth - cardWidth - 20);
+        const posY = Math.min(clientY + 15, window.innerHeight - cardHeight - 20);
+
+        hoverCard.style.left = posX + 'px';
+        hoverCard.style.top = posY + 'px';
+      }
+    })();
+  </script>
+</body>
+</html>
