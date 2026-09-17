@@ -1,0 +1,1476 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8"><title>안드로이드는 무엇으로 이뤄져 있을까?</title><style>@font-face {
+    font-family: 'Pretendard';
+    src: url('https://cdn.jsdelivr.net/gh/projectnoonnu/pretendard@1.0/Pretendard-Regular.woff2') format('woff2');
+    font-weight: 400;
+    font-display: swap;
+}	
+body {margin:0; padding:0;}
+#cocoback {position:relative; }
+body #cocoback, body #cocoback * {line-height: 1; font-family: 'Pretendard', 'NanumBarunGothic', 'NanumGothic', sans-serif !important;}/*(디폴트)기본폰트설정*/
+#cocoback p {position:relative; color:#fff; font-size: 16px;}/*(디폴트)기본 글자색*/
+
+
+/*==(디폴트)상단 제목바==*/
+#tr_top { position:fixed; z-index:2; padding: 15px 3%; width:94%; height: 30px; background: #212121; display: flex; align-items: center; justify-content: space-between; top:0; }
+#tr_top a { font-weight:bold; color:#fff; text-decoration: none; font-size: 20px; }
+#tr_top a:hover {color: #ae70ff;} 
+
+.ccb-content { padding-top: 60px; background:#212121;} /*(디폴트)기본 배경*/
+.tcimg { width:100%; max-width: 1200px; display: block; margin: 0 auto; }
+
+.ccb-player { position:relative; padding: 11px 15px 11px 65px!important; line-height: 1.9!important; letter-spacing: -0.01em; border-top: 1px solid rgba(255,255,255,0.12); margin:0; }/*(디폴트)발언 기본 설정*/
+
+.ccb-player b { display: block; font-size: 14px; margin-bottom: 5px; color:#888888; } /*(디폴트)발언자 이름 설정*/
+.ccb-player:after {display: none; width:40px; height:40px; position:absolute; top:20px; left:15px; background-size: cover; background-position: top center; background-color: rgba(0,0,0,0.2); } /*(디폴트)발언자 두상 설정*/
+
+/*==(디폴트)탭 기본 설정==*/
+.ccb-tab {position: relative; overflow: hidden; margin:0; padding:0; background: #666;}
+.ccb-tabtitle {position: absolute; left: 10px; top: 10px; z-index: 1; padding: 7px; border-radius: 5px; background: #ffffff; font-size: 12px; font-weight: bold; color: #333; max-width: 23px; overflow: hidden;}
+.show-img .ccb-tabtitle {padding: 5px 15px; font-size: 12px; width: fit-content; max-width: none; margin-bottom: 9px; position: relative;}
+.show-img:not(.tabMain) .ccb-tabtitle + .ccb-player {border-top: 0;}
+.tabMain .ccb-tabtitle, .tabTalk .ccb-tabtitle {display:none;}
+
+/*(디폴트)두상있는 발언*/
+.show-img .ccb-player {min-height: 50px; padding: 20px 15px 11px 65px!important;}
+.show-img .ccb-player:after { display: block; }
+
+.tabMain { background: #2c2c2c; } /*(디폴트)메인탭 배경색*/
+.tabInfo { background: #455a64; } /*(디폴트)정보탭 배경색*/
+
+/*==(디폴트)비밀 탭 설정==*/
+.tabSecret {border-left: 10px solid #ae70ff; border-top: 1px solid rgba(255, 255, 255, 0.3); background: #000;}
+.tabSecret .ccb-tabtitle { padding: 5px 15px; font-size: 12px; width: fit-content; max-width:none; margin-bottom: 9px; position: relative; background: #ae70ff;} 
+.tabSecret .ccb-player b { font-size:13px; color:#999!important; display:inline; margin-right: 10px;}
+.tabSecret .continued-line b {display:inline!important; visibility: hidden;}
+.tabSecret .ccb-tabtitle + .ccb-player {border-top: 0;}
+
+/*==(디폴트)잡담 탭 설정==*/
+#cocoback .tabTalk p { font-size: 14px; } 
+.tabTalk { background: #424242; } 
+.tabTalk .ccb-player b { font-size:13px; color:#999!important; display:inline; margin-right: 10px;}
+.tabTalk .continued-line b {display:inline!important; visibility: hidden;}
+
+
+/*== (디폴트)gm,나레이션 발언 설정==*/
+.tabMain .p_c_gm b, .tabMain .p_c_gmdesc b, .tabInfo .p_c_gm b, .tabInfo .p_c_gmdesc b { display:none; } 
+.tabMain .p_c_gm:after, .tabMain .p_c_gmdesc:after { display:none; } 
+.tabMain .p_c_gm { padding: 11px 15px 11px 65px!important; min-height: unset; background: #333; } 
+.tabMain .p_c_gmdesc { padding: 11px 15px 11px 15px!important; min-height: unset; text-align:center; background: #5b5b5b; } 
+
+/*==(디폴트)시스템 발언 설정==*/
+#cocoback .p_system { text-align:center; font-size: 13px!important; color: #ddd; padding-left: 15px!important; display: flex; flex-direction: column; align-items: center;} 
+#cocoback .p_system b { color:#fff!important; background:#999; width: fit-content; padding: 0 10px; margin-bottom: 10px; border-radius:25px;}
+
+span.dice-line { background-color: #111; font-size: 13px; line-height: 1.4!important; padding: 5px 20px; border-radius: 5px; border: 2px solid rgba(255, 255, 255, 0.3); display: inline-block; margin: 5px 0; } /*주사위*/
+
+
+/*==(디폴트)연속 발언 처리==*/
+.continued-line b, .continued-line:after { display: none!important; }
+#cocoback .continued-line { margin-top: -9px!important; padding-top: 5px !important; border-top: none!important; min-height: unset!important;}
+
+
+/* ==(디폴트)탭 조작==*/
+#ccb-ui { position: relative; display: inline-block; margin-left: 10px; }
+
+#ccb-btn { background: #ae70ff; color: white; border: none; padding: 5px 12px; border-radius: 4px; cursor: pointer; font-size: 12px; font-weight: bold; width: 60px;}
+
+#ccb-lst {  display: none; position: absolute; top: 35px; right: 0; background: #444; padding: 10px; border-radius: 8px; border: 1px solid #777; z-index: 1000; width: max-content; box-shadow: 0 2px 5px rgba(0,0,0,0.3);}
+
+#ccb-lst.show { display: grid; gap: 8px; }
+.ccbtoggle { display: flex; align-items: center; gap: 3px; cursor: pointer; font-size: 12px; color: #eee; }
+.ccbtoggle input { accent-color: #ae70ff; cursor: pointer; }
+.hidden-tab { display: none !important; }
+ .p_c1 b { color: #bf1c1c !important; }
+.p_c3 b { color: #0064c8 !important; }
+.p_c6 b { color: #c0c0c0 !important; }
+.p_c7 b { color: #0000ff !important; }
+.p_c8 b { color: #0000ff !important; }
+.p_c9 b { color: #0000ff !important; }
+.p_c10 b { color: #0000ff !important; }
+.p_c11 b { color: #e0e0e0 !important; }
+.p_c12 b { color: #0000ff !important; }
+.p_c13 b { color: #e0e0e0 !important; }
+.p_c14 b { color: #0000ff !important; }
+.p_c15 b { color: #e0e0e0 !important; }
+.p_c16 b { color: #e0e0e0 !important; }
+.p_c17 b { color: #e0e0e0 !important; }
+.p_c18 b { color: #e0e0e0 !important; }
+.p_c19 b { color: #ff0000 !important; }
+.p_c20 b { color: #e0e0e0 !important; }
+.p_c21 b { color: #ff0000 !important; }
+.p_c22 b { color: #e0e0e0 !important; }
+.p_c23 b { color: #ff0000 !important; }
+.p_c24 b { color: #e0e0e0 !important; }
+.p_c25 b { color: #e0e0e0 !important; }
+.p_c26 b { color: #ff0000 !important; }
+.p_c27 b { color: #ff0000 !important; }
+.p_c28 b { color: #ff0000 !important; }
+.p_c29 b { color: #ff0000 !important; }
+.p_c30 b { color: #ff0000 !important; }
+.p_c31 b { color: #ff0000 !important; }
+.p_c32 b { color: #0000ff !important; }
+.p_c33 b { color: #0000ff !important; }
+.p_c34 b { color: #0000ff !important; }
+.p_c35 b { color: #0000ff !important; }
+.p_c36 b { color: #ff0000 !important; }
+.p_c37 b { color: #0000ff !important; }
+.p_c38 b { color: #cddc39 !important; }
+ </style></head><body><div id="cocoback"><div id="tr_top"><a href="#">안드로이드는 무엇으로 이뤄져 있을까?</a></div><div class="ccb-content"><img src="https://pbs.twimg.com/media/HSVT4xdbcAE7Fiu?format=jpg&name=medium" class="tcimg"><div class="ccb-tab tabMain show-img"><div class="ccb-tabtitle">메인</div><p class="ccb-player p_c1"><b>백결</b>
+    니죽이는백결 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    표정 바꾸기: 할말 다 쓰고 맨 끝에 띄어쓰기 하나+(골뱅이)표정이름 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    골뱅이와 표정이름 사이에 띄어쓰기하면 안바꿔짐 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    주사위 굴리는 방법: 뭐 판정하라고 하면 채팅창에 그 기능 쓰삼 그러면 자동으로 뜸 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=50  관찰력 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 54 ＞ 54 ＞ 실패
+  </span></p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    이런식으로 
+  </p><p class="ccb-player p_c2"><b></b>
+    아니 언제 은밀하게 쓰고 있었어 
+  </p><p class="ccb-player p_c2"><b></b>
+    부끄러우니까 나가주세요 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    은밀하게 쓴 적 없는데... 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    아 재혁아 ㅈㄴ사랑해 
+  </p><p class="ccb-player p_c2"><b></b>
+    와 ㅁㅊ  
+  </p><p class="ccb-player p_c2"><b></b>
+    이거 미연시인가요 
+  </p><p class="ccb-player p_c2"><b></b>
+    ㅁㅊ 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    강재혁 ㅈㄴ남자 
+  </p><p class="ccb-player p_c2"><b></b>
+    결이가 말한다!!!!!!!!!!!!!!!!!!!!!! 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    재혁이도 말해줘 
+  </p><p class="ccb-player p_c2"><b></b>
+    아니 근데 이거 컴으로 하니까 사진 디테일이 안 보여서 폰으로 추가해야겟슨 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    채팅창 이름 옆에 대가리 뉴르면 캐릭터 변경 가능 
+  </p><p class="ccb-player p_c2"><b></b>
+    대가리 눌렀을 때 뭐 뜨지는 않는데 
+  </p><p class="ccb-player p_c2"><b></b>
+    이름을 쓰면되니? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    아 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    재혁아 권한을 왜 내가 갖고잇을까 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    좀 가져가봐 
+  </p><p class="ccb-player p_c2"><b></b>
+    ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 
+  </p><p class="ccb-player p_c2"><b></b>
+    저기요 
+  </p><p class="ccb-player p_c2"><b></b>
+    웃기는 짬뽕ㅋ 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    안녕하세요 강재혁입니다 2026다함께나가자 타이만엑스포 
+  </p><p class="ccb-player p_c2"><b></b>
+    아 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    왜 울어 
+  </p><p class="ccb-player p_c2"><b></b>
+    ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 
+  </p><p class="ccb-player p_c2"><b></b>
+    야 강재혁 너 누구아들이야 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ?? 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    울엄마 아들이요 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    안되는데 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    뭐지 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    ㄱㄷ 
+  </p><p class="ccb-player p_c2"><b></b>
+    양육권소동 
+  </p><p class="ccb-player p_c2"><b></b>
+    오오 
+  </p><p class="ccb-player p_c2"><b></b>
+    넌 이제 내거야 
+  </p><p class="ccb-player p_c4"><b>섭</b>
+    나야 나 니 트친 섭이라고 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    될까 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    오 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    선생님♡  
+  </p><p class="ccb-player p_c4"><b>섭</b>
+    오오옷 
+  </p><p class="ccb-player continued-line p_c4"><b>섭</b>
+    결아♡라고 불러야지 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (구체적으로 요구한다...) 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    결아♡  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    예 재혁님. 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    오마이갓이다정말 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    이게실화라고...? 
+  </p><p class="ccb-player p_c2"><b></b>
+    잠 
+  </p><p class="ccb-player p_c2"><b></b>
+    잠지만요 
+  </p><p class="ccb-player p_c2"><b></b>
+    저는 정말로 참을수가 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    잠지만 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (그 얼굴로 말하지 말라고...)  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ㅇ.ㅇ 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    아 귀여워... 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    저도 눈을 감겠습니다  
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    근데 재혁이 사이즈가 될게 작지 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    좌우여백없어야 스탠딩 크게 나옴 
+  </p><p class="ccb-player p_c2"><b></b>
+    결이 진짜 엄청나게 미인이다... 
+  </p><p class="ccb-player p_c2"><b></b>
+    아 근데 사이즈 하나 키우면 비슷한데 
+  </p><p class="ccb-player p_c2"><b></b>
+    그렇게 하니까 비율이 
+  </p><p class="ccb-player p_c2"><b></b>
+    밑을 좀 더 잘라야댈드 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    아니 채팅창에 뜨는거 
+  </p><p class="ccb-player p_c2"><b></b>
+    엥 
+  </p><p class="ccb-player p_c2"><b></b>
+    아하 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    재혁아 말해봐 
+  </p><p class="ccb-player p_c2"><b></b>
+    그럼 다시 사진 가져와야겟다 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    네  
+  </p><p class="ccb-player p_c2"><b></b>
+    작은 것 같기는 해..? 
+  </p><p class="ccb-player p_c2"><b></b>
+    허리 위쪽으로 좀 더 
+  </p><p class="ccb-player p_c2"><b></b>
+    퍄ㅕㄴ집해와야겟다 여백 하면서 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    다녀와  
+  </p><p class="ccb-player p_c2"><b></b>
+    네 서방님 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    로그인도 해와 
+  </p><p class="ccb-player p_c2"><b></b>
+    결이 눈 감은 거 ㅈㅉ 미인이라 아직도 여운남음 
+  </p><p class="ccb-player p_c2"><b></b>
+    지존이다 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ㄱㅅ  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    작아졌어요  
+  </p><p class="ccb-player p_c2"><b></b>
+    재혁이의 또렷한 더듬이 아주 웃겨 
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=40  듣기 (1D100&lt;=40) 보너스, 페널티 주사위[0] ＞ 42 ＞ 42 ＞ 실패
+  </span></p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    ...  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    잘햇러 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (보지마...)  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (명령 잘 들음...)  
+  </p><p class="ccb-player p_c5"><b>밧</b>
+    밧이(수제) 
+  </p><p class="ccb-player p_c4"><b>섭</b>
+    섭이(수제) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    이거 Fail 언제까지 뜨나요 이렇게까지 나를 슬프게 할 필요는 없잖아  
+  </p><p class="ccb-player p_c4"><b>섭</b>
+    아 
+  </p><p class="ccb-player p_c2"><b></b>
+    누르면 되는군 
+  </p><p class="ccb-player p_c4"><b>섭</b>
+    화면 한번 터치하면 사라뎌 
+  </p><p class="ccb-player p_c2"><b></b>
+    나는 지금까지 계속 봤는데 
+  </p><p class="ccb-player p_c4"><b>섭</b>
+    ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 
+  </p><p class="ccb-player p_c2"><b></b>
+    근데 결이 표정 수 무ㅏㅇ;ㅁ 
+  </p><p class="ccb-player p_c2"><b></b>
+    ㅁㅊ나 
+  </p><p class="ccb-player p_c2"><b></b>
+    ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 
+  </p><p class="ccb-player p_c2"><b></b>
+    몇개를 깎은거야..? 
+  </p><p class="ccb-player p_c4"><b>섭</b>
+    보지마 
+  </p><p class="ccb-player continued-line p_c4"><b>섭</b>
+    부끄러으니까 
+  </p><p class="ccb-player continued-line p_c4"><b>섭</b>
+    아니 걍 경우의수 놀이 햇어 
+  </p><p class="ccb-player p_c2"><b></b>
+    정말 재밌었겠다 
+  </p><p class="ccb-player p_c2"><b></b>
+    리스펙 
+  </p><p class="ccb-player p_c2"><b></b>
+    나도 저런 어른이 되어야지 
+  </p><p class="ccb-player p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=50 오늘의운세 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 56 ＞ 56 ＞ 실패
+  </span></p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    에~라이 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    괜찮아 운이 전부는 아니잖아...  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (침울해진다...)  
+  </p><p class="ccb-player p_c2"><b></b>
+    ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 
+  </p><p class="ccb-player p_c2"><b></b>
+    아 커여워 
+  </p><p class="ccb-player p_c2"><b></b>
+    ㅠㅠㅠ 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    슬픈 표정을 안만들었어 
+  </p><p class="ccb-player p_c2"><b></b>
+    아기안드 
+  </p><p class="ccb-player p_c2"><b></b>
+    아 
+  </p><p class="ccb-player p_c2"><b></b>
+    슬프지 않으면 그만 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    슬픔?그게 뭐지? 기름칠이나 해줘 형씨 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    뭐 슬퍼해도 내가 슬퍼하겠니 재혁이가 슬퍼하겠지 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (진짜 안드로이드잖아...)  
+  </p><p class="ccb-player p_c2"><b></b>
+    이거 왜 자꾸 잘못 뜰까 내가 잘못넣었나 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    재혁님^^  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    네 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    골뱅이 확인해봐 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    표정 앞에 골뱅이 안넣으면 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    그 단어가 포함되는 모든 문장에 반응해 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    골뱅이 넣으면 문장 맨 끝에 (골뱅이)표정이름 쳐야 반응하고 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    진짜 도우미 안드로이드같네...  
+  </p><p class="ccb-player p_c2"><b></b>
+    됐다 사진을 잘못 넣었나봐 
+  </p><p class="ccb-player p_c2"><b></b>
+    야르 
+  </p><p class="ccb-player p_c2"><b></b>
+    아 근데 애들 대사랑 같이 얼굴 뜨는 거 너무 좋은데 
+  </p><p class="ccb-player p_c2"><b></b>
+    역재 저리가라야ㅋㅋ 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    오늘 답변의 한계에 도달했습니다<br>Pro 버전을 구독하시고 더 많은 답변을 얻어보세요! 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    저기요  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    &gt; 백결 을(를) 기록했다.  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ^^  
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    안드결이 원본결보다 잘 웃음 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ㄹㅇ 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    웃는 거 지금 많이 보여줘 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    플레이할 때는 안 웃을 가능성이 크잖아 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    맞아 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    . 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    주인님 삐꼬삐꼬 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    아니고 비걱삐걱댈 연식 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    아니라고 우리 결드 마음만은 최신형이라고  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    말 조심하새요. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    글쎄요...:) 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    그렇게 믿고싶으면 그렇게 믿으세요 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    활짝 웃는 게 아니라 저 잔잔한 미소가 너무 좋음  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    안면근육에 기름칠 않해서 활짝 못웃어 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    하트눈뭐야 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    음탕주인님 같으니라고. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    카놀라유라도 사다줘야겠다...  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    ㅎㅎ  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    재혁이 이너셔티브 -2로 해줘 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    그거 걍 내가 위아래 고정충이라 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    아 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    -2로 해둔거임 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    아 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    깔려라. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    아아 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    네... 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    #공감합니다 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    #고정충공감봇 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    막상 해보니까 결이처럼 표정 더 다양하게 할걸 그랬네 보니까 마음이 너무 좋음이 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    다음에는 참고할게요  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    그래 좋은 마음가짐이야  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    근데 표정 다양하게 넣어도 막상 플레이할 때는 막 1111112122131 이러는 거 아님? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    그럴 가능성 매우높음 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    역시 그런가...  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    왜냐면 지금 표정이.94개인가인데 찾는데 100시간걸림 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    평소에는 나도 10개정도만 파지 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    94개는 뭐... 우리 뭐 천하룻밤이야기 이런 티알 하나?  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    쓰는표정들: 딥빡, 매우빡침, 극대노, 싸움은상대빡치라고하는겁니 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    마지막 거 보여주세요  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    결이는 그런 표정 없어 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    날 속였어  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    결이를 뭐라고 생각하는거니  
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    아니뭐야 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    어? 결아 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    나 완전 새됐어 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    결이 이게 무슨 일이야  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    돌아와 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    아아 세상의 진실이 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    산치 계산해야하는 거 아이가  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    와 ㅁㅊ 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    개 정신병 스탠딩 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    꼭 넣어야겠다고 생각했어요  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    재혁님 무슨 꿈이라도 꾸셨나요  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    아아... 역시 꿈인거겠지... 나도 참 그럴 리가 없는데  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    정신병 스탠딩이라는 말이 ㄴㅁ 웃김  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    근데 결이는 mp hp 이성이 낮네 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    왜지? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    나도 정병스탠딩 준비할걸  
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    고물이니까 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    정병스탠딩은 필수라고! 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    일부러 낮게함 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    아.. 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    아...  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    이런ㅁㅊ 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    두렵다 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    쭈인님 너무 무서워요 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    기분탓이야 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (우리집 주인님이 뭔가 이상해) 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    재혁님보다 주인님이 집에 잘붙는다 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    주인님이라고 불러도 돼  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    고민해볼게  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    야 ㅁㅊ 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    난감콤 0된다  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (난감...) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ㅓㅈ 표정이 제 최애가 될 것 같아요  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    참을수가 없다 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    로봇을 너무 사랑해서 로봇에게 0힌 자 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    참아봐 좀  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ㅠㅠ  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    울정도인가 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    로봇에게 ㅇ히면 그냥 딜ㅇ잖아 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    결이가 0아준다고 하면 괜찮아질 것 같아  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    와 진짜 도라이같네 이 미친거 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    갑자기 자아성찰하네 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    정말 미안합니다(사실 별로)  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    자 이제 맛보기 끝 진짜는 내일부터입니다  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    으아앙 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    신나게 즐겨보자고 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    진짜 안 어울린다 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    재밌으면 같은설정으로 다른 시날 이어서가도 좋고 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    ㅇ 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋㅋ 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ㅗ 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ㅋ 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    ━━━━━━━━━━━━━━━━━<br>Chapter 1. 강재혁과 안드로이드<br>━━━━━━━━━━━━━━━━━ 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    평화로운 아침입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    고소한 커피 향이 나는 부엌에서 백결이 요리하는 소리가 나네요. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    방을 나와 부엌을 확인해 보면, 백결이 작동시켜 놓은 커피 머신과 토스트기가 보입니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    주인님, 일어나셨습니까.   
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+      
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    샌드위치를 만들고 있었던 건지, 빵을 들고 있던 백결이 강재혁을 발견하고는 인사를 건넵니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    커피를 드시며 잠시 기다리시면, 샌드위치를 가져다 드리겠습니다. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    백결은 몇 년 전부터 당신과 함께 지내고 있는 안드로이드입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    거의 10년 가까이 강재혁의 집에서 살며, 주로 인간인 당신이 하지 않아도 되는 일이나, 하지 못하는 일들을 해결하고 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    이런 안드로이드를 가지고 있는 건 비단 강재혁 뿐만이 아닙니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    기술의 발전으로 요즘 시대에는 개인 안드로이드 하나씩은 구비하고 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    집안일을 도와주는 안드로이드도 있고, 어린 아이나 노인을 돌보는 안드로이드도 있으며, 하다못해 직장에도 업무를 보조하는 안드로이드가 보급된 오늘날입니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    고마워, 결아. (아직 잠기운이 묻어나는 재혁은 결에게 짧게 웃어보인다. 자리에 앉으니 식탁에 차려진 것들이 눈에 들어왔다.)  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    식탁에는 커피 한 잔과 식기가 놓여 있습니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...당연히 해야 할 일입니다.  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    아침 식사는 매일 강재혁의 취향에 맞춰서 백결이 준비해 놓습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    가끔 강재혁이 좋아하지 않는 음식들도 나오지만, 늘 먹고 싶은 것만 먹을 수는 없으니까요. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    아마 백결이 주인의 건강을 염려해 이렇게 준비하는 것 같습니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (오, 커피.) (익숙하게 커피잔을 집어들어 한 모금 마시면서 뉴스로 시선을 돌린다.) 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    뉴스를 확인해 보면, 실종에 관한 내용이 나오고 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    3년 전 사라진 12살짜리 남자아이 하나와 40대 여성 한 명을 찾고 있다는 내용입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    이런 실종 사건은 몇 년 전부터 급증하고 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    인간의 윤리관이 기술의 발전을 따라가지 못 하고 있다는 생각이 드는 요즘입니다. 
+  </p><p class="ccb-player p_c7"><b>◎지능 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=65  지능(아이디어) (1D100&lt;=65) 보너스, 페널티 주사위[0] ＞ 59 ＞ 59 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    그러고보니 실종 사건이 늘어난 시기와 안드로이드들이 대중적으로 보급된 시기가 묘하게 일치하는 것 같습니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (그러거나 말거나 샌드위치 만드느라 바쁨)   
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (기분 탓인지 모르겠지만, 연관이 없을 것 같던 두 시기가 맞물린다는 것이 한번 신경 쓰이기 시작하자 생각이 꼬리를 물고 이어졌다.) ...별 의미는 없을 거라고 생각하지만...  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    결아, 너는 어떻게 생각해? 실종 사건이 늘기 시작한 거, 안드로이드 보급 시기와 묘하게 겹치는 것 같지 않아? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (잘 구워진 베이컨을 빵 위에 올리다 말고 재혁을 본다.) 글쎄요. 딱히 중요해 보이진 않습니다.   
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    10년 전에나 유행하던 음모론 같은 말을 하십니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (늘 이렇다니까...) ...현실을 알려줘서 고마워.  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    도움이 되었다면 다행이군요.  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (단칼에 거절당한 기분이라 씁쓸한 기분이 든다... 커피 때문일지도...) ...응!  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (다시 샌드위치 만들기에 열중한다... 로메인을 손질하고 있다...)   
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (슬슬 뉴스를 보는 것에도 흥미가 떨어졌는지, 슬쩍 일어나 결의 등 뒤쪽으로 다가온다.) 샌드위치 아직이야?  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    백결. 모델명은 BG290, 출시된 지는 어연 10년이 다 되어가는 구형 모델입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    핸드폰이 신제품을 1년에 하나씩 출시하는 것처럼, 요새는 안드로이드도 거의 1년에 하나씩 새 모델이 나오고 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    경쟁 시장은 치열하게 돌아가고, 안드로이드 개발 회사는 구형 모델에 투자할 돈과 부품을 점점 줄여나가는 추세입니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (등을 찌르는 강재혁을 개무시... 자연스럽게 지나쳐 잘 만들어진 샌드위치를 식탁에 올려놓는다.) 다 됐습니다. 저는 주방 뒷정리 후 청소를 시작 하겠습니다. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    샌드위치를 식탁에 올려놓은 백결은 또다시 금방 다른 집안일을 하러 갑니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (뒤에서 결의 모습을 조금 더 살펴보려다가...) ...아, 응. 고마워. 잘 먹을게. (멋쩍게 웃으며 다시 자리에 앉아 식사를 시작한다.) 
+  </p><p class="ccb-player p_c8"><b>◎듣기 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=40  듣기 (1D100&lt;=40) 보너스, 페널티 주사위[0] ＞ 38 ＞ 38 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    백결의 몸에서 '덜그럭'거리는 소리가 납니다. 아무래도 부품 하나가 빠진 모양입니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (샌드위치를 씹다가 그 소리에 이끌려 고개를 돌린다.) ...괜찮아?  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...? 샌드위치에 무슨 문제라도 있습니까? (갸웃)   
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    아니, 샌드위치는 평소대로 맛있는데... (바닥에 굴러가는 작은 물체를 보다가, 다시 고개를 들고) 부품 빠진 것 같은데? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    부품... 아, 어쩐지 어젯밤에 배터리 충전 연결이 잘 안 되는 것 같던데.   
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    안드로이드를 제작한 회사들은 안드로이드가 기계라는 점에서, 인간보다 수명이 훨씬 긴 것을 장점으로 내세웁니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    하지만 바로 그 점 때문에 주기적인 점검과 수리를 해주지 않으면 다른 가전 제품들처럼 망가지고는 합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    특히 모든 안드로이드들에게는 기본적으로 '인간을 지켜야 한다.'는 전제가 제작 당시부터 프로그램에 깔려있기 때문에, 인간이 하기 곤란한 위험한 일들은 전부 안드로이드가 해결하여 부품 수명이 예상 기간보다 빨리 닳습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    백결만 하더래도, 얼마 전 교통사고가 날 뻔한 강재혁을 지켜주려다가 대신 자동차에 치여 오른팔 부품 하나가 통째로 날아갔으니까요. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    다행히 팔 부품이 멀쩡하게 보존되어 바로 끼우기만 하면 됐지만, 1년에 하나씩 신상품을 내보내는 게 당연하게 된 기술 발전의 시대에서, 백결은 벌써 고물 취급을 받는 고치기 까다로운 모델입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    잔고장도 꽤나 잦고, 맞는 부품을 찾는 것도 어려운 골동품인 백결을 강재혁이 아직 새로운 안드로이드로 바꾸지 않은 이유는, 백결과의 정 때문입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    강재혁 말고도, 많은 인간 주인들이 자신의 안드로이드가 완전히 고장나 더이상 가동하지 않을 때까지 그들과 함께 합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    이런 현상은 아마 오늘날의 안드로이드들이 지나치게 '인간답기' 때문일 겁니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    안드로이드를 버리는 게 마치 자신의 가족, 연인, 친구를 버리는 것과 같은 기분이라는 인터뷰가 있을 정도니까요. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    일단 아침을 다 먹고 나면 수리 센터에 가봐야 겠습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    간 김에 배터리 연결 문제도 해결합시다. 방전된 안드로이드는 잠이 든 인간보단, 죽은 인간에 더 가까우니 말입니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    어쩐지, 로 끝날 일이 아니잖아. (한쪽 눈썹을 약간 올리며) 오늘 수리 센터에 한번 가보자. 급한 일 없지?  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    음, 오늘 빨래 널어야 하는데.(본인 일이 아니라는 양 태연하게 말한다.)   
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    굳이 가봐야 합니까? 제 손질은 알아서 잘 하고 있다고 생각합니다만. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    지금 빨래가 중요한 게... 아니, 빨래도 중요하긴 한데. 그래도 시간 난 김에 센터부터 가자. 네가 손질하는 데도 한계가 있잖아.  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    그래도, 같은 연식에 이렇게 멀쩡한 기종은 없습니다. (살짝 놀라간 입꼬리에 희미한 자부심이 비친다.)   
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (그 모습을 바라보다가 맥 빠지는 웃음을 흘린다.) ...알아. 그건 잘 알지, 당연히. 그래도 내가 신경 쓰여서 그래. 미리 문제 생기기 전에 관리 받으면 좋잖아? 건강검진이라고 생각해.  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...그렇게까지 하실 거면, 그냥 명령을 하십시오.  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    '명령'이 아닌 '설득'을 하는 재혁에, 잠시 어이없다는 듯이 바라보던 백결은 아무 말 없이 방으로 들어간다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...식사 후 바로 나갈 수 있게 준비하겠습니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ! ...그래. 나도 준비하고 있을게. (활짝) 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    ━━━━━━━━━━━━━━━━━<br>Chapter 2. 인간과 안드로이드<br>━━━━━━━━━━━━━━━━━ 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    밖으로 나오니, 길에는 많은 사람들과 안드로이드들이 함께 하는 모습이 보입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    초등학생의 손을 잡고 함께 횡단보도를 건너는 보모 안드로이드도 있고, 공원에는 운동을 도와주고 있는 안드로이드, 도로에서 교통 정리를 돕고 있는 경찰 안드로이드도 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    보통의 안드로이드들은 인간과의 쉬운 구분을 위해 여전히 기계에 가까운 모습을 하고 있지만, 가끔 어떤 안드로이드들은 인간과 아주 비슷한 모습을 하고 있어서 구분이 어렵기도 합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그런 안드로이드들을 개발한 회사는 '불쾌한 골짜기'를 줄이기 위해서라고 주장했습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그러고보니, 그 회사가 바로 백결을 만든 'S 회사'였죠. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그 생각을 하고 옆에 있는 백결을 다시 보니 정말 인간과 닮았다는 생각이 듭니다. 
+  </p><p class="ccb-player p_c9"><b>◎관찰 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=55  관찰력 (1D100&lt;=55) 보너스, 페널티 주사위[0] ＞ 20 ＞ 20 ＞ 어려운 성공
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    특히 피부 같은 부분이 유독 인간의 것과 흡사합니다. 가만 보면 이음새 같은 것도 잘 찾아볼 수 없는 게, 본인이 인간이라고 말하면 믿을 정도입니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ... (눈을 살짝 좁히면서, 결의 손목이나 목덜미 부분을 빤히 바라본다.) (기술력이 이렇게 좋은건가...)  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    뭘 그렇게 보십니까? (전신을 뚫어져라 훑어보는 재혁의 시선을 느낀 듯, 재혁을 마주 바라본다. 빤히빤히.) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...! (당혹감에 얼굴을 살짝 붉히며 시선을 돌린다.) 아, 아니... 그냥... 새삼스레 정말 섬세하다 싶어서. 네 피부나... 그런 것들. 꼭 진짜 사람같잖아.  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    그야, 그것이 저희의 목적입니다. 인간은 아예 닮지 않은 것보다 미묘하게 닮은 것에 불쾌감을 느끼니까요. (당연한 것을 말하는 재혁이 이해가 잘 안되는 표정이다.) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    그것도 그렇지. (결의 말에 납득했는지 선선히 고개를 끄덕이지만, 한번 신경을 쓰고 나니 시선이 다시 결의 피부로 향했다. 이번에는 뺨의 피부 같은 것을 보다가, 천천히 위로 올라가니 긴 속눈썹이 움직이는 모습이 꼭...) ...  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (...? 역시 인간은 이해하기 어려워.) 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    백결과 이런 저런 이야기를 하다보면, 어느 새 수리 센터에 도착했습니다. 
+  </p><p class="ccb-player p_c10"><b>>수리 센터</b>
+    수리 센터에 들어가자, 직원이 우리를 반겨줍니다. 
+  </p><p class="ccb-player continued-line p_c10"><b>>수리 센터</b>
+    그도 그럴게 자주 찾아왔으니 이제는 얼굴을 외울 법도 합니다. 
+  </p><p class="ccb-player p_c11"><b>직원</b>
+    강재혁 님과 백결, 3번 방으로 들어와 주세요. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    마치 병원에서 진료를 보기 위해서 부르는 것 같습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    하긴, 안드로이드에게는 수리 센터가 병원과 같겠죠. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    들어가자. (고개를 살짝 까딱이고 결과 함께 방으로 걸음을 옮겼다.) 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (결국 왔군...)  
+  </p><p class="ccb-player p_c11"><b>직원</b>
+    백결, 여기 베드 위에 누워요. 어디가 문제인지 같이 듣게 전원은 켜두고요. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    백결이 직원이 시키는대로 수술대처럼 생긴 베드에 눕자, 직원은 능숙하게 백결을 개복합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    인간으로 치자면 가슴부터 아랫배까지 전부다 열린 백결의 표정이 그닥 좋지 않네요. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ... 감각 시스템을 꺼두는 걸 깜빡 했습니다. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    감각 시스템. 인간을 더 수월하게 지키기 위해서 도입된 시스템입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    확실히 멀쩡한 정신으로 온몸이 열리는 감각을 느끼는 건 영 좋지 않겠죠. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (불편해하는 모습을 보니 마음이 좋지 않다...) 앗, 이런... 어떡하지? 내가 대신 꺼줄까? 이미 열린 상태로도 가능한가...  
+  </p><p class="ccb-player p_c11"><b>직원</b>
+    어어? 지금 건드시면 안됩니다? 안그래도 기종이 오래돼서 잘못 건들면 큰일나요! 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    하아... 빨리, 끝내주십시오. (눈을 꾹 감은 채 한 손으로 재혁의 옷자락을 꼭 잡는다.) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (흔치 않은 약한 모습까지 보이니 더더욱 마음이 무거워진다... 양심이 따끔.) 나라도 미리 떠올렸어야 했는데... 미안, 조금만 참아. (눈썹을 팔자로 하며 작게 중얼거린다. 옷자락을 쥐어잡은 결의 손등 위로 자신의 손바닥을 덮어주었다.)  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    치과에 처음 온 어린애 같은 우스운 모양새가 됐지만, 익숙한 온기에 백결의 불쾌감이 좀 완화된 것 같습니다. 
+  </p><p class="ccb-player p_c11"><b>직원</b>
+    음... 이거 좀 곤란하네. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    그때, 백결의 몸속을 이리저리 살펴보던 직원의 표정이 어두워집니다. 
+  </p><p class="ccb-player p_c11"><b>직원</b>
+    인간으로 따지자면 심장인 부분의 부품이 떨어져서 깨졌어요. 얼마 전에 차에 치였을 때 부숴졌나봐요. 이게 없으면 앞으로 충전이 불가능할 거예요. 그럼 이제 완전히 고장인 거죠. 
+  </p><p class="ccb-player continued-line p_c11"><b>직원</b>
+    수리는 이번이 마지막입니다. 더이상 백결의 부품도 생산되지 않으니, 저희 쪽에서는 더 해드릴 수 있는 게 없네요. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    직원은 백결 자체도 꽤나 오래된 기종이고 백결을 만든 회사는 얼마 전에 파산 후 폐업했기 때문에, 더이상 백결을 고칠 방법이 없다고 합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    아, 그럼 이제 백결은 멈추고 마는 걸까요? 영영 움직이지 못하게 되는 건가요? 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ... (직원의 설명을 듣던 재혁의 표정이 서서히 굳는다. 충전도 못 하는 상태에서 고칠 방법이 없다니, 그럼...) 잠시만요, 그럼... 어떻게 다른 방법은 없나요? 대체할 수 있는 다른 기종의 부품이라든지... 
+  </p><p class="ccb-player p_c11"><b>직원</b>
+    그게... 음... (하고 싶은 말이 있어 보이지만, 쉽게 말을 꺼내지 못한다.) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    방법이 있다면 말씀해주세요. 가능한 건 최대한... 시도해보고 싶어요. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    강재혁의 필사적인 말에 직원이 눈치를 보더니 조심스레 입을 엽니다. 
+  </p><p class="ccb-player p_c11"><b>직원</b>
+    강재혁님이 저희 센터 단골이셔서 몰래 알려드리는 건데요. 
+  </p><p class="ccb-player continued-line p_c11"><b>직원</b>
+    아직 회사 안에 옛날 부품 재고가 남아있을 수도 있어요. 'S 회사'가 파산 때문에 워낙 급하게 폐업 처리가 된 곳이라 건물 안 쪽 정리가 아직 덜 끝났다는 말이 있거든요. 
+  </p><p class="ccb-player continued-line p_c11"><b>직원</b>
+    굳이 따지고 보면 절도긴 하지만, 어차피 망한 곳이라서 아무도 신경 안 쓸 거예요. 그리고 사실 이런 이유로 아직 부품이 남아있을 지도 미지수고요. 
+  </p><p class="ccb-player continued-line p_c11"><b>직원</b>
+    'S 회사'의 주소... 알려드릴까요? 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (예상치 못한 '방법'을 들은 재혁의 눈동자가 미미하게 흔들린다. 이런 쪽의 대안일 거라고는 생각지 못했는데...) ... (하지만 이것 외에 다른 방법이 있을지는 미지수다. 가능한 방법은 하나라도 더 알아두는 편이 낫다는 생각에, 결국 고개를 끄덕인다.) 네, 부탁드릴게요.  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    부품을 훔쳐온다는 게 양심에 조금 찔리지만, 어차피 아무도 사용하지 않을 물건이라면 그것이 간절하게 필요한 우리가 요긴하게 잘 사용하는 게 낫지 않은가요? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    그런 강재혁의 생각을 읽은 건 지, 마침 눈이 딱 마주친 백결이 의중을 알 수 없는 표정을 짓고있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    살 수 있다는 안도감? 도덕을 져버리고 일개 기계를 선택한 것에 대한 실망감? 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그것은 중요하지 않습니다. 복잡한 표정조차도 너무나 사람같은데, 어떻게 작동 중지하도록 가만히 내버려둘 수 있겠어요. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그럼 어서 백결의 부품을 구하기 위해 폐쇄되었다는 'S 회사'의 건물로 갑시다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    ━━━━━━━━━━━━━━━━━<br>Chapter 3. 'S 회사'와 안드로이드<br>━━━━━━━━━━━━━━━━━ 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    강재혁이 알기로 백결을 만든 'S 회사'는 안드로이드가 한창 개발되던 시기에 혜성처럼 등장해, 한동안 안드로이드 시장을 점유했던 곳입니다. 
+  </p><p class="ccb-player p_c7"><b>◎지능 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=65  지능(아이디어) (1D100&lt;=65) 보너스, 페널티 주사위[0] ＞ 98 ＞ 98 ＞ 실패
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    인간과 지나치게 비슷해 여러 논란들에 휩싸였죠. 자신이 안드로이드를 사용할수록 안드로이드의 인권을 침해하는 것 같다는 기분이 든다는 후기도 있었습니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    도착했습니다.  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    도착한 'S 회사'는 한때 꽤 잘 나갔던 안드로이드 개발 회사치고는 상당히 작은 건물을 사용하고 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    겉으로 보이는 건 4층짜리 건물이네요. 이런 곳에서 안드로이드의 제작과 판매 등 모든 것을 전부 해결했다는 게 잘 믿기지 않습니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (건물 앞에 서서 가볍게 둘러본다.) 생각보다... 작다고 해야할까. 제조 공장이 따로 있다는 소리는 못 들었는데. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    글쎄요. 제가 알기로도 별도의 공장은 없습니다. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    가까이 가면, 역시 문은 셔터와 자물쇠로 이중 잠금이 되어있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    안드로이드인 백결이 열려고 해도 열리지 않을 것 같은 철통 보안입니다. 
+  </p><p class="ccb-player p_c9"><b>◎관찰 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=55  관찰력 (1D100&lt;=55) 보너스, 페널티 주사위[0] ＞ 39 ＞ 39 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    주변을 잘 살펴보니, 사람 한 명이 들어갈 수 있을 것 같은 창문이 보입니다. 잘 보면 잠금장치도 걸려있지 않습니다. 백결이 아래서 받쳐주고, 강재혁이 다시 끌어올리면 둘다 들어갈 수 있을 것 같습니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...음. 저기로 들어갈 수 있을 것도 같은데... (창문의 너비를 가늠하며 중얼거리다가, 고개를 돌려 결을 바라본다.) 위로 올려줄 수 있어? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    물론입니다. (재혁의 허리를 잡고 가볍게 들어올린다. 기계라 그런지, 흔들리지도 않고 안정적이다.) 높이가 부족합니까? 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    와... (높다... 갑자기 시야가 확 올라오자 감탄하며 주위를 잠시 둘러보다가, 창문 쪽으로 손을 뻗어본다.) 어, 아니. 이대로도 닿을 것 같아. 조금 더 창문 쪽으로 붙어줄래? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    확인했습니다. (실수로라도 재혁을 놓치지 않게, 팔에 힘을 더 주고 창문 쪽으로 붙는다.) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (결의 도움을 받아 창틀에 손을 짚는다. 손에 단단히 힘을 준 채로, 창 안쪽으로 기울여 몸을 집어넣었다.) ...휴. (실내로 들어오자 내부의 모습이 신경 쓰이기는 했지만, 먼저 결을 올리는 것이 우선이었다.) 손 잡아봐. 닿을까? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    음, 손은 충분히 닿지만. 저는 최적화가 되지 않은 몸체이기에 무게가 꽤 나갈텐데, 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    주인님의 신체 능력으로는 불가능해보입니다.(돌직구!)  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...어...  
+  </p><p class="ccb-player p_c12"><b>◎근력 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=55  근력 (1D100&lt;=55) 보너스, 페널티 주사위[0] ＞ 98 ＞ 98 ＞ 실패
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    백결의 도발 아닌 도발에 당신은 온 힘을 다해 백결을 끌어올렸습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그러나 역시 0.1톤이 넘는 무게를 버티기엔 무리였을까요. 손에 힘이 빠진 순간, 거의 다 올라온 백결의 오른 팔이 창틀에 부딪혔습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    창 밖으로 백결의 오른팔이 떨어지는 것이 보입니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...이전에 있었던 사고 때 약해진 것 같습니다. 신경 쓰지 마세요. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    앗, 아... 이런, 어쩌지... 미안해. 조심했어야 했는데... (재혁의 안색이 조금 창백해지며 결의 상태를 살핀다.) (신경이 안 쓰일리가 있나...)  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    수리가 어려운 인간의 몸이 고장나는 것 보다는 났습니다. 그보다, 중요한 것은 그게 아닐텐데요. (건물 내부를 힐끗 바라본다.)   
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    작은 사고가 있었지만... 겨우 건물 내부로 들어와 보면 그곳은 텅 비어 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    안에 있는 게 종이가 난잡하게 올라가있는 책상이 전부라 그런 지, 마치 백룸 같기도 합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    뭐가 언제 튀어나와도 이상하지 않을 풍경이네요. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (결과 함께 건물 안으로 들어온 재혁은 먼저 가까이에 있는 책상으로 걸어가본다.)  
+  </p><p class="ccb-player p_c13"><b>>책상</b>
+    책상 위에는 종이들이 이리저리 정신 없게 올려져 있습니다. 
+  </p><p class="ccb-player continued-line p_c13"><b>>책상</b>
+    파산 이후 급하게 정리를 했다는 말이 진짜 같습니다. 
+  </p><p class="ccb-player continued-line p_c13"><b>>책상</b>
+    아무리 그래도 중요한 자료들은 챙기고 가는 게 보통인데 말이죠. 
+  </p><p class="ccb-player p_c14"><b>◎자료조사 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=70  자료조사 (1D100&lt;=70) 보너스, 페널티 주사위[0] ＞ 30 ＞ 30 ＞ 어려운 성공
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    어라? 이거 체포 영장입니다. 게다가 체포 대상으로 쓰여있는 게, 'S 회사의 전직원'입니다. 파산으로 폐업했다고 들었는데, 그 외에도 다른 사정이 있었던 걸까요? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    주인님. 여기 지도가 있습니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...앗, 잘됐다. (유용한 것을 찾았다는 소식에, 굳어있던 얼굴이 조금 풀린다. 결에게서 지도를 건네받아 살펴본다.) 
+  </p><p class="ccb-player p_c15"><b>>건물 지도</b>
+    건물은 총 지상 4층, 지하 1층으로 되어있습니다. 
+  </p><p class="ccb-player continued-line p_c15"><b>>건물 지도</b>
+    설명을 보니 지상의 1층부터 4층까지는 손님 접대나 안드로이드 시연, 판매 등의 활동이 주로 이뤄졌던 것 같습니다. 
+  </p><p class="ccb-player continued-line p_c15"><b>>건물 지도</b>
+    안드로이드 개발과 수리 같은 건 지하에서 한 모양입니다. 
+  </p><p class="ccb-player continued-line p_c15"><b>>건물 지도</b>
+    아마 우리에게 필요한 것도 전부 저쪽에 있겠죠. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...음. 아무래도 지하부터 가봐야 할 것 같네. 엘레베이터가 작동하지는... 않으려나?  
+  </p><p class="ccb-player p_c16"><b>>엘레베이터</b>
+    비상 전력이 가동하는 건지, 버튼을 누르면 엘레베이터가 작동합니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    굳이, 타야할까요. 안전해 보이지는 않습니다.  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    확실히... 엘레베이터 점검을 안한 지도 꽤 되었겠지? (낡은 티가 나는 엘레베이터를 훑어보며 잠시 고민한다.) ...지하로 가는 계단은? 비상문이 열려있어? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    지도를 보시는 동안 둘러봤지만, 계단은 사용이 불가능할 것 같습니다. (백결이 가리키는 곳을 보면, 무너진 비상통로가 보인다.) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (고개를 조금 끄덕이고) 그럼 선택의 여지가 없네. 나도 달갑지는 않지만... 엘레베이터를 이용해보자. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    (달갑지 않다. 차라리 포기하고 돌아가길 바랬다만.) ...예. 그럼 제가 먼저 타겠습니다. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    안에 탑승하면 4층부터 지하 1층까지의 버튼이 보입니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...일단은, 안전해 보입니다.  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    응, 다행이다. (조금 안심한 표정으로, 조심스럽게 엘레베이터 안으로 발을 들인다.) 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    지금 우리가 가야할 곳은 지하입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    지하로 가는 버튼을 누르고 잠시 기다리다보면, B1층에 도착했다는 엘레베이터 안내 음성이 들립니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    엘리베이터의 문이 열리자, 냉기가 훅 끼쳐들어옵니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    전등이 켜지지 않아 어두운 실내에서는 쇠 냄새 같은 것들이 풍기고 있습니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    으음... 예상은 했지만, 정말 어둡네. 이래서야... (눈썹을 살짝 찌푸리며 주위를 둘러본다.) 춥기도 춥고. 지하인 걸 감안해도 꽤 쌀쌀하네.  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    예. 어딘가 전원 스위치가 있을 겁니다. (벽을 더듬는다.)  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    외벽을 잘 살펴보면 엘레베이터 옆에 있는 전등 스위치를 발견합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    불을 켜자, 차가운 푸른빛이 내부를 밝힙니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그리고 강재혁과 백결의 눈앞에 놀라운 광경이 펼쳐집니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그곳에는 몇 십개는 되어보이는 철제로 된 탁자가 소름 돋을 정도로 일렬로 정확하게 놓여있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    각 탁자 위에는 안드로이드 설계도로 보이는 종이들이 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    양쪽에 있는 안드로이드 제작실과 수리실이라고 이름 붙여진 곳은, 마치 폐병원의 수술실 같은 모습입니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    주인님, 저기,  
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    ...아니, 보지 않는 편이 좋을 것 같습니다.  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (웬만해서는 말을 번복하지 않는 그의 낯선 모습에 재혁도 알 수 없는 오싹함을 느끼고 고개를 끄덕인다. 그렇게 말한다면 이유가 있겠지...) 응? 으, 으음... 그래. ...천천히 돌아다녀보자. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...되도록, 빠르게 나가는 편이 좋을 것 같습니다. (나는 문제가 되지 않지만 당신은...)   
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (제작실에 가야 본격적으로 부품을 찾아볼 수 있겠지만, 우선 가까이에 있는 철제 책상으로 먼저 시선이 향했다.) ... 
+  </p><p class="ccb-player p_c17"><b>>철제 책상</b>
+    회사의 연구원들이 사용하는 것처럼 보이는 책상입니다. 
+  </p><p class="ccb-player continued-line p_c17"><b>>철제 책상</b>
+    차갑고 딱딱한 책상 위에는 안드로이드 설계도 / 서랍 / 종이가 있습니다. 
+  </p><p class="ccb-player continued-line p_c17"><b>>철제 책상</b>
+    이쪽도 지상과 똑같이 설계도와 종이들이 이리저리 흩어지고 섞여있습니다. 
+  </p><p class="ccb-player continued-line p_c17"><b>>철제 책상</b>
+    평소에 정리정돈 좀 하고 살면 좋을텐데 말입니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    이건... 설계도인가? (대충 널려있는 종이를 집어들어본다.) 
+  </p><p class="ccb-player p_c18"><b>>안드로이드 설계도</b>
+    'S 회사'가 제작하는 안드로이드들의 설계도입니다. 
+  </p><p class="ccb-player continued-line p_c18"><b>>안드로이드 설계도</b>
+    안드로이드를 제작할 시 필요한 부품들과 제작 방법 등이 적혀있습니다. 
+  </p><p class="ccb-player continued-line p_c18"><b>>안드로이드 설계도</b>
+    그리고 그 옆에는 작게 '제작 시 주의할 점'이라는 사항이 보입니다. 
+  </p><p class="ccb-player p_c19"><b><안드로이드 설계도 - 주의할 점></b>
+    10대는 10대끼리.<br>30대는 30대끼리.<br>50대는 50대끼리.<br>나이에 맞춰서.<br> <br>여자는 여자끼리.<br>남자는 남자끼리.<br>성별에 맞춰서.<br> <br>어긋나면 안 돼.<br>어색해서는 안 돼.<br>싫어하실 거야. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    안드로이드의 설계도 치고는 내용이 다소 이상합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    원래 안드로이드를 만들 때 이런 요소까지 고려를 하나요? 
+  </p><p class="ccb-player p_c7"><b>◎지능 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=65  지능(아이디어) (1D100&lt;=65) 보너스, 페널티 주사위[0] ＞ 83 ＞ 83 ＞ 실패
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    안드로이드를 만들 때 이상한 점이 없으려면, 당연히 신경 써야할 부분일 지도 모릅니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ... (뭔가 꺼림칙한 기분이 들긴 하지만, 기계공학쪽에는 영 지식이 없는 터라 별다른 말을 붙이지 않고 시선을 돌린다.) 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    뭔가 이상한 거라도 보셨습니까?  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    아, 아니... 그게, 이쪽 주의사항 말이야. 좀... 이상하게 보여서. 내가 생각했던 것과는 다른데. (설계도를 살짝 들어올려 보여준다.) 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ... 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=65  지능(아이디어) (1D100&lt;=65) 보너스, 페널티 주사위[0] ＞ 83 ＞ 83 ＞ 실패
+  </span></p><p class="ccb-player p_c3"><b>강재혁</b>
+    어때 보여? (뭔가 알아차린 게 있으려나, 하고 은근히 기대하는 눈빛...)  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    딱히 큰 문제는 없어보입니다. 인간에게 불쾌감을 주지 않기 위해, 위화감을 없애는 데 집중한 방침으로 보입니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...음, 그런가. 그럴 수도 있겠네. (느릿하게 고개를 끄덕이기는 하지만, 어쩐지 조금 찜찜함이 남은 표정이었다.)  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ? 문제 없으시면 탐색을 계속하겠습니다. (고개를 한 번 갸웃, 한 뒤, 다른 쪽으로 간다.) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    서랍... 열릴까? (책상 옆에 있던 서랍 손잡이를 살짝 잡아당겨본다.) 
+  </p><p class="ccb-player p_c20"><b>>서랍</b>
+    서랍을 열어보면, 그 안에는 권총이 있습니다. 
+  </p><p class="ccb-player continued-line p_c20"><b>>서랍</b>
+    안드로이드 개발자의 서랍에 권총이라니 이상한 일입니다. 
+  </p><p class="ccb-player continued-line p_c20"><b>>서랍</b>
+    권총을 살펴보면, 안에는 탄창이 전부 채워진 상태입니다. 
+  </p><p class="ccb-player continued-line p_c20"><b>>서랍</b>
+    무언가 갑자기 튀어나올 것만 같은 이런 곳에서, 권총 하나 쯤은 호신용으로 챙겨둬도 나쁠 것 없을 거 같습니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...좀... 무섭네... 이거, 진짜 작동되는 총일까? (선뜻 집어들지 못하고 잠시 머뭇거린다. 괜히 지니고 다니다가 오발이라도 하면.)  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    총은 작동하는 것 같습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    소시민인 당신에겐 작은 권총이 무겁게만 느껴지지만, 당신이 이곳에 무엇을 위해 왔는지 잊어선 안됩니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    만약 당신이 잘못된다면, 남은 백결은... 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ... (재혁은 조금 머뭇거리다가, 결국 권총을 집어든다. 차가운 촉감과 묵직한 무게감이 유독 무겁게 느껴졌다.)  
+  </p><p class="ccb-player p_c21"><b>기본 권총 (22 구경)</b>
+    라운드당 공격 횟수: 1회 피해량: 1D6 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (결국 권총을 잘 챙겨들고, 이번에는 책상에 남아있던 종이를 살펴보았다. 어지럽게 널려있어서 뭐가 뭔지 알아보기는 힘들지만...) 
+  </p><p class="ccb-player p_c22"><b>>종이</b>
+    종이를 확인해 보면, 무언가 쓰여 있는 걸 볼 수 있습니다. 몇몇 글자들이 지워져 있습니다. 
+  </p><p class="ccb-player p_c23"><b><직원의 ???></b>
+    이제 얼마 남지 않았다. 그 분께 바칠 제물들이 하나만 더 있으면 된다. 아, 그 분께서 우리의 노력을 보시면 분명 기뻐하실 거야. 수많은 희생 끝에 결국 가장 완벽한 ▤■▩ ▨▥를 만들었다. 그리고 그것들이 학습을 하게 만들었다. 가장 완벽한 것을 만들어 바친 우리는 분명 멸망의 끝에서도 구원받을 수 있겠지. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    제물이니 구원이니, 나열되어 있는 단어들만 보면 마치 사이비 신도가 적은 것 같은 글귀입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    제대로 이해할 수 없는 말들로 쓰여있네요. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    어쩐지 읽으면 읽을 수록 불쾌한 기분만 듭니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (재혁은 그 문자의 나열에 더 의미를 두지 않으려 의도적으로 시선을 돌렸다. 손끝에 남은 종이의 질감이 묘하게 찝찝했다.) ...정확히 뭔진 모르겠지만... 이 회사, 평범하지만은 않은 것 같아. 빨리 부품을 챙겨서 나가자.  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    동의합니다. 더 있다간 주인님의 신변에 문제라도 생길 것 같은 공간입니다. (백결은 한시라도 빨리 건물에서 벗어나고 싶다는 듯이, 성큼성큼 안드로이드 제작실로 향한다.)  
+  </p><p class="ccb-player p_c24"><b>>안드로이드 제작실</b>
+    안드로이드를 제작하는 공간입니다. 
+  </p><p class="ccb-player continued-line p_c24"><b>>안드로이드 제작실</b>
+    회색 벽에 회색 천장과 회색 바닥, 철제로 된 제작대까지. 
+  </p><p class="ccb-player continued-line p_c24"><b>>안드로이드 제작실</b>
+    온통 금속으로 된 것처럼 보이는 인테리어입니다. 
+  </p><p class="ccb-player continued-line p_c24"><b>>안드로이드 제작실</b>
+    내부에 감도는 냉기에 몸서리가 쳐지는 듯합니다. 
+  </p><p class="ccb-player continued-line p_c24"><b>>안드로이드 제작실</b>
+    화이트 보드에는 안드로이드 설계도가 붙어있고, 구석에는 부품 상자들이 쌓여있습니다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...아, 이거... (결에게 맞는 부품을 찾을 수 있을지도 모른다는 생각에, 상자쪽으로 먼저 시선이 끌렸다.)  
+  </p><p class="ccb-player p_c25"><b>>부품 상자</b>
+    부품 상자에는 각각 라벨이 붙어있습니다. 
+  </p><p class="ccb-player continued-line p_c25"><b>>부품 상자</b>
+    라벨명을 보면, 10대 여성과 20대 남성. 외국인, 내국인 등으로 분류가 되어있는 걸 알 수 있습니다. 
+  </p><p class="ccb-player continued-line p_c25"><b>>부품 상자</b>
+    심지어 20XX.05.16, 20XX.08.22 처럼 생산 연도도 적혀있습니다. 
+  </p><p class="ccb-player continued-line p_c25"><b>>부품 상자</b>
+    서둘러 우리에게 필요한 부품을 빨리 찾아봅시다. 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (솔직히 처음에는 꺼림칙하게 느껴졌던 분류법인데, 이제 보니 도움이 되는 것 같기도...) 내국인이고, 20대 남성... 이려나. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    강재혁이 부품 상자를 열면, 역겨운 시취가 뿜어져 나옵니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    썩어가는 시체의 냄새에 구역질이 날 것만 같습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그 안에는 무수히 많은 숫자의 실제 사람의 팔이 들어있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    다른 상자들도 확인해 보면, 마찬가지입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    진짜 사람의 장기가 부패된 채로 있거나, 부패되어 가는 상태로 방치되었습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    인체 해부도 같은 설계도, 수상한 안드로이드 제작 방법, 사람의 신체들까지. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    이쯤되면, 퍼즐이 모두 맞춰집니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    강재혁은 깨닫습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    S회사의 안드로이드를 이루고 있는 부품들, 그것은 바로 개조된 인간의 신체입니다. 
+  </p><p class="ccb-player p_c26"><b>...</b>
+      
+  </p><p class="ccb-player p_c27"><b>그렇다는 건, 백결도?</b>
+      
+  </p><p class="ccb-player p_c28"><b>진실을 알게 된 강재혁, 이성 판정 1d2/1d6</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=70  이성 (1D100&lt;=70) 보너스, 페널티 주사위[0] ＞ 53 ＞ 53 ＞ 보통 성공
+  </span></p><p class="ccb-player continued-line p_c3"><b>강재혁</b><span class="dice-line">
+    1d2 (1D2) ＞ 2
+  </span></p><p class="ccb-player p_system"><b>system</b>
+    [ 강재혁 ] 이성 : 70 → 68 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    이때, 안드로이드 수리실 쪽에서 이상한 소리가 들려옵니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    ━━━━━━━━━━━━━━━━━<br>Chapter 4. ???과 안드로이드<br>━━━━━━━━━━━━━━━━━ 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    창밖으로 보이는 안드로이드 수리실에는 수많은 안드로이드들이 눈을 감은 채 일렬로 서있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    마치 관 없는 시체들이 서있는 것 같은 모습입니다. 
+  </p><p class="ccb-player p_c8"><b>◎듣기 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=40  듣기 (1D100&lt;=40) 보너스, 페널티 주사위[0] ＞ 31 ＞ 31 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    안쪽에서 기계가 덜그럭거리는 소리가 들립니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    들려온 소리에 문을 열고 안쪽을 확인해 보면 사람의 인영이 보입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    좀더 자세히 보면, 그건 움직이고 있는 안드로이드입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    강재혁과 백결이 온 것을 눈치채지 못한 건 지, 안드로이드는 손에 무언가를 든 채로 어떤 행동을 하고 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    수리실 안에서 보이는 건... 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    복부가 비어있는 안드로이드가 인간의 시체에서 장기를 뜯어내, 제 몸 안에 집어넣으려 하는 끔찍한 장면입니다. 
+  </p><p class="ccb-player p_c29"><b>강재혁, 이성 판정 0/1d2</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=68  이성 (1D100&lt;=68) 보너스, 페널티 주사위[0] ＞ 85 ＞ 85 ＞ 실패
+  </span></p><p class="ccb-player continued-line p_c3"><b>강재혁</b><span class="dice-line">
+    1d2 (1D2) ＞ 1
+  </span></p><p class="ccb-player p_system"><b>system</b>
+    [ 강재혁 ] 이성 : 68 → 67 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...?! 욱... (순간적으로 등골을 타고 식은땀이 흘렀다. 현실을 부정해보려고 해도, 점차 퍼져오는 피비린내가 이것이 현실이라는 것을 깨닫게 하는 듯했다. 무언가가 크게 잘못되었다.)  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    주인님, 일단 진정을. (천장의 '그것'을 본 뒤로 좋지 않은 직감이 들었지만, 주인에게 직접적인 위협이 될 존재가 나타날 것은 상정하지 못했다. '저것'은 적이다.)  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    그때, 안드로이드가 천천히 몸을 돌리기 시작합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그 기계의 눈이 우리를 향합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그것의 렌즈에 비치는 것은 백결입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    미완성 된 안드로이드는 몸을 일으킵니다. 
+  </p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    찾았다. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    그는 기쁜 듯이 미소 짓습니다. 
+  </p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    모자란 부품. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    백결의 부품을 갖기 위해. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    천천히 걸어오기 시작합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    기계음이 섞인 목소리가 흘러나옵니다. 
+  </p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    완벽한 몸이 필요해. 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b>
+    바쳐야만 해. 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b>
+    BG290. 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b>
+    그 몸, 내게 줘. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    백결의 부품을 뜯어 자신의 몸에 채워 넣으려는 안드로이드를 막아야 합니다. 
+  </p><p class="ccb-player p_c31"><b>전투 시작</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=50  민첩성 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 24 ＞ 24 ＞ 어려운 성공
+  </span></p><p class="ccb-player p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=60  민첩성 (1D100&lt;=60) 보너스, 페널티 주사위[0] ＞ 96 ＞ 96 ＞ 실패
+  </span></p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+     
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    CC&lt;=70  민첩성 (1D100&lt;=70) 보너스, 페널티 주사위[0] ＞ 14 ＞ 14 ＞ 극단적 성공
+  </span></p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b>
+    드디어, 드디어 될 수 있어. 완벽한———(절걱거리며 움직이는 안드로이드의 몸 안에 남아있는 부품들이 부닥치는 소리가 들린다. 백결 공격.) 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    CC&lt;=50  근접전:격투 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 9 ＞ 9 ＞ 극단적 성공
+  </span></p><p class="ccb-player p_c1"><b>백결</b>
+    ...! 윽, (뒤에는 재혁이 있다. 피할 수 없어. 그렇다면...) 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=60  근접전:격투 (1D100&lt;=60) 보너스, 페널티 주사위[0] ＞ 45 ＞ 45 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    하, 하하하. 부품 주제에 건방지게...! 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    1d3++1D4 비무장 (1D3+1D4) ＞ 1[1]+2[2] ＞ 3
+  </span></p><p class="ccb-player p_system"><b>system</b>
+    [ 백결 ] HP : 14 → 11 
+  </p><p class="ccb-player p_c32"><b>[강재혁 턴]</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=20  사격(권총) (1D100&lt;=20) 보너스, 페널티 주사위[0] ＞ 10 ＞ 10 ＞ 어려운 성공
+  </span></p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    (시선은 줄곧 백결에게만 고정되어 있다. 강재혁의 공격을 눈치채지 못한 채, 그대로 총에 맞았다.) 
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    1d6 권총 (1D6) ＞ 1
+  </span></p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    (몸에 흠집이 나자 곤란하다는 표정을 짓습니다. 사람의 안면 근육을 사용하며.) 
+  </p><p class="ccb-player p_system"><b>system</b>
+    [ 미완성 안드로이드 ] HP : 12 → 11 
+  </p><p class="ccb-player p_c33"><b>[백결 턴] </b>
+      
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...주인에게 위협이 되는 존재는, 배제해야겠지. (안드로이드 공격)  
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=60  근접전:격투 (1D100&lt;=60) 보너스, 페널티 주사위[0] ＞ 85 ＞ 85 ＞ 실패
+  </span></p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    불량품 주제에 감히. 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    CC&lt;=50  근접전:격투 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 68 ＞ 68 ＞ 실패
+  </span></p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b>
+    (기계 뇌가 계산한 한 치의 오차도, 불필요한 동작도 없는 움직임으로 다가온다. 백결 공격.) 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    CC&lt;=50  근접전:격투 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 73 ＞ 73 ＞ 실패
+  </span></p><p class="ccb-player p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=60  근접전:격투 (1D100&lt;=60) 보너스, 페널티 주사위[0] ＞ 80 ＞ 80 ＞ 실패
+  </span></p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    (이건... 내 전공이 아니다.) 
+  </p><p class="ccb-player p_c32"><b>[강재혁 턴]</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=20  사격(권총) (1D100&lt;=20) 보너스, 페널티 주사위[0] ＞ 79 ＞ 79 ＞ 실패
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    미완성 안드로이드의 신경은 오로지 백결, 아니 부품에 쏠려 있는 듯 합니다. 강재혁의 공격을 피하지 않습니다. 
+  </p><p class="ccb-player p_c34"><b>[백결 턴]</b>
+      
+  </p><p class="ccb-player p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=60  근접전:격투 (1D100&lt;=60) 보너스, 페널티 주사위[0] ＞ 74 ＞ 74 ＞ 실패
+  </span></p><p class="ccb-player p_c35"><b>[안드로이드 턴]</b>
+      
+  </p><p class="ccb-player p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    CC&lt;=50  근접전:격투 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 35 ＞ 35 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=80  회피 (1D100&lt;=80) 보너스, 페널티 주사위[0] ＞ 58 ＞ 58 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    부품을, 줘. 그 몸을... 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    1d3++1D4 비무장 (1D3+1D4) ＞ 3[3]+4[4] ＞ 7
+  </span></p><p class="ccb-player p_system"><b>system</b>
+    [ 백결 ] HP : 11 → 4 
+  </p><p class="ccb-player p_c32"><b>[강재혁 턴]</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (결이 공격당하는 모습을 보자 더욱 마음이 조급해진다. 이를 악물고, 떨리는 손으로 다시 방아쇠를 당긴다.) 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=50  사격(권총) (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 36 ＞ 36 ＞ 보통 성공
+  </span></p><p class="ccb-player continued-line p_c3"><b>강재혁</b><span class="dice-line">
+    1d6 권총 (1D6) ＞ 4
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    쇳덩이로 된 몸에 총알이 부딪히며, 귀를 찢는 듯한 금속음이 울립니다. 
+  </p><p class="ccb-player p_system"><b>system</b>
+    [ 미완성 안드로이드 ] HP : 11 → 7 
+  </p><p class="ccb-player p_c34"><b>[백결 턴]</b>
+      
+  </p><p class="ccb-player continued-line p_c34"><b>[백결 턴]</b>
+     
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    안 돼. 도움이, 되어야.   
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=60  근접전:격투 (1D100&lt;=60) 보너스, 페널티 주사위[0] ＞ 55 ＞ 55 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    CC&lt;=50  근접전:격투 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 58 ＞ 58 ＞ 실패
+  </span></p><p class="ccb-player p_c1"><b>백결</b><span class="dice-line">
+    1d3++1D4  비무장 (1D3+1D4) ＞ 1[1]+3[3] ＞ 4
+  </span></p><p class="ccb-player p_system"><b>system</b>
+    [ 미완성 안드로이드 ] HP : 7 → 3 
+  </p><p class="ccb-player p_c35"><b>[안드로이드 턴]</b>
+      
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    공허한 눈을 한 기계는 관절을 꺾어가며 끊임없이 달려듭니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    분명 감각 센서가 있으니 고통을 느끼는 몸일텐데, 배선이 뜯겨나간 채로도 멈추지 않습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    포기하지 않는 것을 보아하니, 신체의 일부가 떨어져 나가도 대체하면 그만인 모양입니다. 
+  </p><p class="ccb-player p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    CC&lt;=50  근접전:격투 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 41 ＞ 41 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c1"><b>백결</b><span class="dice-line">
+    CC&lt;=80  회피 (1D100&lt;=80) 보너스, 페널티 주사위[0] ＞ 60 ＞ 60 ＞ 보통 성공
+  </span></p><p class="ccb-player p_c30"><b>미완성 안드로이드</b><span class="dice-line">
+    1d3++1D4 비무장 (1D3+1D4) ＞ 1[1]+3[3] ＞ 4
+  </span></p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=50  민첩성 (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 72 ＞ 72 ＞ 실패
+  </span></p><p class="ccb-player p_system"><b>system</b>
+    [ 백결 ] HP : 4 → 0 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    안돼, 아직, 안...———  
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    방금까지의 소란이 거짓말처럼, 백결의 한 마디를 마지막으로 주위가 조용해졌습니다. 
+  </p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    드디어. 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b>
+    완벽해졌어. 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b>
+    완성됐어. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    안드로이드는 충격에 휩싸여 굳어버린 강재혁에게는 눈길도 주지 않은 채, 그대로 지나쳐 백결에게로, 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    ...아니. '백결이었던 것'에게로 향합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    이미 가동을 중지한 듯, 너덜너덜해진 백결 앞에 안드로이드가 섰습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    곧이어 백결이 부서지는 소리가 나고, 고철을 뜯어내는 파열음이 이어집니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    가벼운 금속들이 바닥에 부딪히는 소리가 끝나자, 이어서 무거운 금속이 떨어지는 소리가 납니다. 
+  </p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    고마워, BG290. 
+  </p><p class="ccb-player continued-line p_c30"><b>미완성 안드로이드</b>
+    이제 난 바쳐질 수 있어. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    백결의 부품들을 단 안드로이드가 미소 짓습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    산산조각이 난 백결은 아무 말도, 움직임도 없습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그리고 당신은, 그 모든 것을 지켜보고 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    혹시라도 이쪽을 볼까, 숨죽이고 있던 것이 무색하게. 완성된 안드로이드는 유유히 엘레베이터 쪽으로 향합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    당신은 살아남았습니다. 지독한 무관심 아래에서. 
+  </p><p class="ccb-player p_c36"><b>ENDING ??. 미완성 인간과 완성된 안드로이드</b>
+    강재혁 생환, 백결 로스트. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    ━━━━━━━━━━━━━━━━━<br>시간을 거스르는 자!<br>지금 상황: 미완성 안드가 결이를 줘패려고 했지만<br>사랑의 힘으로 재혁이가 대신 처맞았다!<br>사랑 굉장해!<br>━━━━━━━━━━━━━━━━━ 
+  </p><p class="ccb-player p_system"><b>system</b>
+    [ 백결 ] HP : 0 → 4 
+  </p><p class="ccb-player continued-line p_system"><b>system</b>
+    [ 강재혁 ] HP : 15 → 11 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    무슨 일이, 있었던 것 같은데.   
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    (대신 공격당한 재혁을 발견한다.) ...! 어째서, 어째서 그런 짓을...! 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    윽... 으, 난 괜찮아... (작게 비틀거리며 몸을 일으키고, 미완성 안드로이드를 경계하듯 응시한다.) 그보다 조심해. 또 저 안드로이드가... 
+  </p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    방해, 하지마. (몸의 방향은 강재혁 쪽이지만, 눈동자는 백결을 향해 고정되어있다.) 
+  </p><p class="ccb-player p_c32"><b>[강재혁 턴]</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (아직 욱신거리는 팔을 들어올려 묵직한 권총을 감싸쥔다. 더이상 시간을 끌 수 없다는 것을 알았다.) 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=50  사격(권총) (1D100&lt;=50) 보너스, 페널티 주사위[0] ＞ 61 ＞ 61 ＞ 실패
+  </span></p><p class="ccb-player p_system"><b>system</b>
+    [ 강재혁 ] 행운 : 50 → 39 
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...! (조준이 실패한 줄 알았지만, 미완성 안드로이드가 아직도 결에게 시선이 꽂혀있던 것이 불행 중 다행이었다. 총성에 반사적으로 몸을 뒤틀던 안드로이드의 몸에 총알이 틀어박혔다.) 
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b><span class="dice-line">
+    1d6 권총 (1D6) ＞ 6
+  </span></p><p class="ccb-player p_c37"><b>전투 종료</b>
+      
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    미완성 된 안드로이드의 몸이 마침내 바닥에 꽂힙니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    이리저리 부서진 몸은 마지막까지 발악하며 천천히 기어옵니다. 
+  </p><p class="ccb-player p_c30"><b>미완성 안드로이드</b>
+    안 되는데. 이런 몸은- 나는. 완벽하지 않아서. 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    파직- 거리며 몸을 떨던 고철은 마지막 남은 힘으로 백결을 바라보더니, 이내 그 눈은 빛을 잃습니다. 
+  </p><p class="ccb-player p_c9"><b>◎관찰 판정</b>
+      
+  </p><p class="ccb-player p_c3"><b>강재혁</b><span class="dice-line">
+    CC&lt;=55  관찰력 (1D100&lt;=55) 보너스, 페널티 주사위[0] ＞ 17 ＞ 17 ＞ 어려운 성공
+  </span></p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    안드로이드의 목을 살펴보니, 모델명이 적혀 있습니다. BG329. 백결과 같은 기종입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    망가진 부분을 제외하면, 안드로이드의 부품들을 백결에게 호환할 수 있을 것 같습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    총격전이 오고 갔지만, 아직 멀쩡한 부품들도 존재하고 가장 필요한 심장 부품은 보존되어 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그렇지만 한편으로는 망설여지기도 합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    진실을 알아버린 이상, 백결의 부품을 교체하는 것이 정말 옳은 일인지. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    백결이 그걸 바라고 있을지, 모르겠습니다. 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ... (결과 마찬가지로, 살아서 움직이던 미완성 안드로이드의 몸뚱이는 더이상 움직이지 않았다. 그 몸통에 박혀있는 부품에 시선이 한참 머물렀다.) ...결아.  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    예, 주인님. (유리처럼 투명한 눈이 강재혁을 바라본다. 무엇을 말할지 예상은 가지만, 먼저 말을 꺼내지는 않는다. 주인에게 충실해야 하는 것이 안드로이드니까.)  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    ...네가 바라지 않는 선택이 아닐 수도 있다는 건 알아. 하지만... (재혁은 잠시 말을 멈추더니, 작동을 멈춘 기계의 앞으로 다가가 몸을 숙인다. 자세히 안을 살펴보면, 결에게 필요하던 부품 몇 개가 눈에 보였다. 조심스레 그 안으로 손을 넣어 자잘한 부품을 뽑아내, 다시 결의 앞으로 왔다.)  
+  </p><p class="ccb-player continued-line p_c3"><b>강재혁</b>
+    나는 네가 이걸 받아줬으면 좋겠어. 네가 내 뜻을 이해하지 못하더라도, 아니면... 내 선택에 의문을 가진다고 해도. 그냥. (잠시 머뭇거리다가 손을 뻗어 부품을 내민다.) ...그냥, 내 욕심이라고 생각하고, 받아주면 안 될까? 
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    ...그건,  
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    명령입니까, 부탁입니까?  
+  </p><p class="ccb-player p_c3"><b>강재혁</b>
+    (그 물음에 오히려 입꼬리가 느슨하게 풀렸다.) ...당연히 부탁이지. 내가 기억하기로, 너에게 명령을 한 적은 별로 없다고 생각하는데... (시선을 내리깔고 잠시 생각하다가 다시 말을 잇는다.) ...근데, 네가 거부한다고 하면... 명령을 선택할지도 몰라.  
+  </p><p class="ccb-player p_c1"><b>백결</b>
+    예. 그렇게 말할 줄 알았습니다.  
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    (쓸데없는 정이라고 생각했다. 나는 언제든 대체 될 수 있는 기계이기에. 나 때문에 당신이 해선 안될 선택을 한 것 같았다.) 
+  </p><p class="ccb-player continued-line p_c1"><b>백결</b>
+    (하지만, 내가 당신 없이 살 수 없는 것처럼. 어쩌면 당신도.) 
+  </p><p class="ccb-player p_c6 p_c_gm"><b>GM</b>
+    안드로이드에게서 심장을 분리합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    이대로 백결을 죽게 내버려 둘 거였다면, 처음부터 이곳에 오지도 않았을 겁니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    백결이 살기를 바랐습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    강재혁의 옆에서 살기를 바랐습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    어떤 방식으로 만들어졌든, 이 세상에 태어난 존재입니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그러니 이대로 떠나보낼 수 없습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    누군가의 몸을 빌렸더라도 살아가기를 원합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    누군가의 생을 빌렸으니 살아가야 합니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    이제 이 목숨의 무게가 얼마나 무거운 지 둘다 알고 있습니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    그러니 이 시간을 소중히 여기지 않아서는 안 됩니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    주어진 목숨을, 받은 삶을 함부로 하지 않을 겁니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    살아갈 수 있는 기회를 포기하지 않을 겁니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    백결과 강재혁은 다시 일상으로 돌아갑니다. 
+  </p><p class="ccb-player continued-line p_c6 p_c_gm"><b>GM</b>
+    이전과 같지는 않아도, 살아가는 건 언제나 그런 것이었으니. 
+  </p><p class="ccb-player p_c38"><b>ENDING B. 백결과 안드로이드</b>
+    강재혁 생환, 백결 생환<br> <br>백결은 새로운 부품을 달고 살아가게 됩니다. 아마 언젠가는 다시 망가지고 부서지겠지만, 적어도 그게 지금 당장은 아닙니다. 누군가에게서 받은 몸으로 둘은 함께 하기로 결정했습니다. 그 목숨의 무게가 얼마나 무거운 지 이제 알고 있으니, 분명 오래오래 주어진 시간을 소중히 하며 살아가야 할 것입니다.<br> <br>생환 보상 이성 회복 1d6 
+  </p></div></div><script>
+    const ccbBtn = document.getElementById('ccb-btn');
+    const ccbLst = document.getElementById('ccb-lst');
+
+    if(ccbBtn && ccbLst) {
+        ccbBtn.onclick = function() {
+            const isShow = ccbLst.classList.toggle('show');
+            this.innerText = isShow ? 'Close' : 'View';
+        };
+    }
+
+   document.querySelectorAll('.ccbtoggle input').forEach(checkbox => { 
+		checkbox.onchange = function() {
+			const mainTab = document.querySelector('.tabMain');
+			const isMainOff = mainTab ? mainTab.classList.contains('hidden-tab') : true;
+
+			if (isMainOff) {
+				const checkedCount = document.querySelectorAll('.ccbtoggle input:checked').length;
+				if (checkedCount === 0) {
+					this.checked = true; 
+					return; 
+				}
+			}
+
+			const targetClass = this.dataset.target;
+			document.querySelectorAll('.' + targetClass).forEach(el => {
+				el.classList.toggle('hidden-tab', !this.checked);
+			});
+		}; 
+	});
+</script></div></body></html>
