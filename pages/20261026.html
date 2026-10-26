@@ -105,8 +105,8 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
 .cmp{max-width:64em}.cr{display:grid;grid-template-columns:1fr 1fr;gap:6px 36px;padding:14px 0;border-bottom:1px solid var(--line)}
 .cr>div{border-left:3px solid var(--a);padding-left:16px;font-size:1.2rem}.cr>div+div{border-color:var(--ok)}
 .cr.hd{border-bottom:2px solid var(--fg)}.cr.hd>div{font-size:.95rem;letter-spacing:.12em;color:var(--mut)}
-.cmp[data-m="b"] .cr>div:nth-child(2),.cmp[data-m="a"] .cr>div:nth-child(1){display:none}
-.cmp[data-m="b"] .cr,.cmp[data-m="a"] .cr{grid-template-columns:1fr}
+.cr>div{transition:.2s}.cmp[data-m="b"] .cr>div:nth-child(1),.cmp[data-m="a"] .cr>div:nth-child(2){font-weight:700}.cmp[data-m="b"] .cr>div:nth-child(2),.cmp[data-m="a"] .cr>div:nth-child(1){opacity:.55}
+
 .bar.low span{color:var(--a);font-weight:500}
 .no{font-size:.95rem}.lbl{font-size:.92rem}.sm{font-size:1rem}p{max-width:40em}
 .tab{font-size:1.3rem}.chip{font-size:1.1rem}
@@ -125,25 +125,34 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
  .node b{font-size:1rem}.mid{font-size:.9rem}
 }
 @media (max-width:420px){.step small{display:block;font-size:.85rem}}
+.team{margin-top:22px;font-size:1.05rem;line-height:1.8;color:var(--sub)}.team>b{color:var(--fg);font-size:1.15rem}
+.tm{display:grid;grid-template-columns:repeat(2,auto);gap:0 28px;justify-content:start}
+.pc{display:grid;grid-template-columns:1fr 1fr;gap:4px 40px;max-width:66em;margin-top:18px}
+.pc p{font-size:1.05rem;margin:.55em 0;max-width:none}.pc p b{font-weight:700}
+.pch{grid-column:1/-1;font-weight:900;font-size:1.5rem}.lbl.g{color:var(--ok);font-weight:700}.lbl.r{color:var(--a);font-weight:700}
+.fi{animation:in .5s ease}
+@media (max-width:768px){.pc{grid-template-columns:1fr;gap:4px}.pc p{font-size:1rem}.pch{font-size:1.3rem}.team{font-size:.95rem}}
 </style>
 </head>
 <body>
 <div class="bar-top" id="prog"></div>
 
 <section class="slide">
-  <div class="no"><b>01</b> / 08 &nbsp; 유아 동작교육 콘텐츠 비평 · 5세</div>
+  <div class="no"><b>01</b> / 09 &nbsp; 유아 동작교육 콘텐츠 비평 · 5세</div>
   <div class="cov">
     <div class="cl">
       <button class="sw" id="sw" aria-label="풍선"></button>
       <h1>이 활동,<br>정말 유아 동작교육일까?</h1>
       <p class="mut" id="swt">풍선을 눌러 보세요.</p>
+      <div class="team"><b>유아동작교육 3조</b>
+        <div class="tm"><span>202500201 김민서</span><span>202500207 김효정</span><span>202500225 임유미</span><span>202500226 임지현</span></div></div>
     </div>
-    <div class="qr"><div class="qrb" id="qrb"></div><p>QR 코드를 스캔하면<br>이 발표 자료로 이동해요</p></div>
+    <div class="qr"><div class="qrb" id="qrb"><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAWUAAAFlCAAAAAAW7qZnAAAD3ElEQVR42u3dy07DMBBA0Rj1/3/ZLNmUOjNjm1Kfu0KoD3pkWRqSJtclSZIkSfr02s+PncYq2y8YG6JMmbIoU6Ysyv+1x+tJpV7PDUNt5lsMn7b6E1vLdgzKokyZsihTFmXKZ07Yw+F1WGS6rdcCA3Rf9Jc1a9mOQVmUKYsyZcqiTNmEvW1qrr9CZGquH5ee938Ca9mOQVmUKVMWZcqiTNmEvb7hydqRs7mHr2At2zFEmbIoU6YsypQp66Mm7F5+Wnv6Y/Jb39ayHUOUKVMWZcqiTJmy9k3YG2bTyNHqyCy99yvZ1rIdg7IoUxZlypRFmbIJ++XEuqrIzNsCU3PywHWzlu0YokyZsihTFmXKlDVrwt5wtHrVedstNzV3a9mOIcqUKYsyZVGmTFkLJuzhMeFIfTTHRi5O1nNvXB/Bi4O5tWzHoCzKlCmLMmVRpnzmhB25undkME+ewr33CHTy0ubdWrZjUBZlyqJMmbIoUz68Z0PiO3yDeerB8ypI8i5gzVq2Y1AWZcqURZmyKFM2Yc+bWCPD69Rj46vqCUdr2Y5BWZQpUxZlyqJM+cwJu/rIdSeBT539V/0j4TJh2zEoizJlUaZMWZQpm7BLk/BwKK7fSis5H//Rt8lN2HYMyqJMmbIoUxZlyif1yDxp6snayRE8OUvXL5vWAp/CWrZjUBZlypRFmbIoUz57wk5+M7o+/l65Nx5OzZEHJL8hbi3bMSiLMmVRpkxZlCmf3u0Tncfjb2b0vFOf93HSU3Ov2VrLdgzKokyZsihTFmXKZ07Yq25Avery36v+nOTJ8K4lbsegLMqURZkyZVGmfGSPzPCaPFK85ATsO0/r5d8W/09gLdsxKIsyZcqiTFmUKR8/YUdm3voZ2ldgGq9fSzxSrz3AWrZjUBZlypRFmbIoUzZhB6bbqcP21Gua1c9JL544by3bMSiLMmXKokxZlCmfOWEnD9hGvg6dvDV28tB38sVcS9yOIcqUKYsyZVGmTFm1CXvVlcCnXt6sfkWy+izdrWU7BmVRpizKlCmLMmW9mrAzM+SdgXTVrbQiv01+zOfj+u2521q2Y1AWZcqURZmyKFM+fsKOTKxTb5oVGXSv8htby3YMUaZMWZQpizJlyto3YW+ofsPs5I2tIwN/t5btGJRFmbIoU6YsypT1PhN28prfwwckx+qpf7q1bMegLMqURZkyZVGmbMJ+WX02rV9AvH5FsuED6q/re9h2DMqiTFmUKVMWZcom7LuTZbLIFck23krrmnx6urVsx6AsypRFmTJlUaZ8ZFNPoNYvttayHYOyKFOmLMqUJUmSJEk6uW/R+bq/XL/RlAAAAABJRU5ErkJggg==" alt="발표 자료 QR 코드"></div><p>QR 코드를 스캔하면<br>이 발표 자료로 이동해요</p></div>
   </div>
 </section>
 
 <section class="slide">
-  <div class="no"><b>02</b> / 08 &nbsp; 콘텐츠 소개</div>
+  <div class="no"><b>02</b> / 09 &nbsp; 콘텐츠 소개</div>
   <div class="s2">
     <div class="tx">
       <h2>풍선을 몸 곳곳으로 이어 전달하는 협동 놀이</h2>
@@ -165,7 +174,7 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
 </section>
 
 <section class="slide">
-  <div class="no"><b>03</b> / 08 &nbsp; 기본동작 분석</div>
+  <div class="no"><b>03</b> / 09 &nbsp; 기본동작 분석</div>
   <h2>움직임이 한쪽으로 치우쳐 있다</h2>
   <p class="mut sm">막대를 누르면 동작이 보여요 · 영상에서 관찰된 동작 종류 수</p>
   <div id="bars" style="max-width:44em"></div>
@@ -173,7 +182,7 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
 </section>
 
 <section class="slide">
-  <div class="no"><b>04</b> / 08 &nbsp; 구체적인 장면 분석</div>
+  <div class="no"><b>04</b> / 09 &nbsp; 구체적인 장면 분석</div>
   <h2>좋은 점과 아쉬운 점</h2>
   <div class="tabs"><button class="tab on" data-t="good">좋은 점</button><button class="tab" data-t="bad">아쉬운 점</button></div>
   <div class="list" id="ana"></div>
@@ -181,21 +190,17 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
 </section>
 
 <section class="slide">
-  <div class="no"><b>05</b> / 08 &nbsp; 가장 큰 문제</div>
+  <div class="no"><b>05</b> / 09 &nbsp; 가장 큰 문제</div>
   <h2>“풍선을 어떻게 움직일까?”는 누가 정하나?</h2>
-  <p class="mut sm">슬라이더로 결정권을 교사에서 유아에게 옮겨 보세요.</p>
+  <p class="mut sm">슬라이더로 결정권을 교사에서 유아에게 옮겨 보세요. 가운데를 기준으로 내용이 바뀌어요.</p>
   <input type="range" id="sl" min="0" max="100" value="0" aria-label="결정권">
   <div class="ends"><span>교사 지시</span><span>유아 주도</span></div>
-  <div class="steps" id="steps">
-    <div class="step"><b>1. 스스로 정하기</b><small>어떻게 넘길지 내가 정한다</small></div>
-    <div class="step"><b>2. 방법 비교</b><small>여러 방법을 시도한다</small></div>
-    <div class="step"><b>3. 친구에게 제안</b><small>“이렇게 해 보자!”</small></div>
-  </div>
+  <div class="pc" id="pc"></div>
   <div class="note" id="slS"></div>
 </section>
 
 <section class="slide">
-  <div class="no"><b>06</b> / 08 &nbsp; 개선 전과 후</div>
+  <div class="no"><b>06</b> / 09 &nbsp; 개선 전과 후</div>
   <h2>무엇이 문제였고, 어떻게 바꿨나</h2>
   <div class="chips"><button class="chip mt on" data-m="all">비교</button><button class="chip mt" data-m="b">개선 전</button><button class="chip mt" data-m="a">개선 후</button></div>
   <div class="cmp" id="cmp" data-m="all">
@@ -209,9 +214,9 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
 </section>
 
 <section class="slide">
-  <div class="no"><b>07</b> / 08 &nbsp; 새로 구상한 활동</div>
+  <div class="no"><b>07</b> / 09 &nbsp; 새로 구상한 활동</div>
   <h2>풍선 여행 길 만들기</h2>
-  <p class="mut">만 5세 · 3~4명 모둠 · 시연: 발표자 2명 (교사 역 / 유아 역)</p>
+  <p class="mut">만 5세 · 3~4명 모둠</p>
   <div class="flow" id="flow">
     <div class="rail"></div>
     <div class="ball" id="ball" style="left:12.5%"></div>
@@ -226,19 +231,31 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
     <div><div class="lbl">부족했던 동작 보강</div>
       <p><b>이동</b> 도약하기·홉핑·스키핑하며 풍선 옮기기, 풍선을 가슴과 등 사이에 끼우고 천천히 걷기</p>
       <p><b>조작</b> 스펀지볼·탱탱볼 던져 받기, 굴리기, 튕겨 받기</p>
-      <div class="lbl" style="margin-top:20px">준비물</div>
+      </div>
+    <div><div class="lbl">준비물</div>
       <p>풍선, 스펀지볼, 탱탱볼, 전기테이프, 몸 부위 카드</p></div>
-    <div><div class="lbl">만 5세에게 맞는 이유</div>
-      <p>신체 조절·균형이 자라는 시기 → 달리기 대신 걷기·도약·홉핑·스키핑, 난이도 선택</p>
-      <p>또래와 협동하고 규칙을 이해하는 시기 → 모둠 협력, 규칙은 한 가지(풍선 떨어뜨리지 않기)</p>
-      <p>생각을 말로 제안하는 시기 → 방법을 아이가 직접 정함</p>
-      <div class="lbl" style="margin-top:20px">안전</div>
-      <p>전기테이프로 바닥에 표시 · 넓은 간격 · 떨어져도 “다시 해 보자!”</p></div>
   </div>
 </section>
 
 <section class="slide">
-  <div class="no"><b>08</b> / 08 &nbsp; 정리</div>
+  <div class="no"><b>08</b> / 09 &nbsp; 개선한 내용</div>
+  <h2>만 5세에게 맞게, 더 안전하게</h2>
+  <div class="lbl">만 5세에게 맞는 이유</div>
+  <div class="list">
+    <div class="row-i" style="--tc:var(--ok)"><b>신체 조절·균형</b><span>신체 조절·균형이 자라는 시기 → 달리기 대신 걷기·도약·홉핑·스키핑, 난이도 선택</span></div>
+    <div class="row-i" style="--tc:var(--ok)"><b>협동과 규칙</b><span>또래와 협동하고 규칙을 이해하는 시기 → 모둠 협력, 규칙은 한 가지(풍선 떨어뜨리지 않기)</span></div>
+    <div class="row-i" style="--tc:var(--ok)"><b>생각을 말로</b><span>생각을 말로 제안하는 시기 → 방법을 아이가 직접 정함</span></div>
+  </div>
+  <div class="lbl" style="margin-top:22px">안전</div>
+  <div class="list">
+    <div class="row-i" style="--tc:var(--a)"><b>바닥 표시</b><span>전기테이프로 바닥에 표시</span></div>
+    <div class="row-i" style="--tc:var(--a)"><b>간격</b><span>넓은 간격</span></div>
+    <div class="row-i" style="--tc:var(--a)"><b>실수해도 괜찮아</b><span>떨어져도 “다시 해 보자!”</span></div>
+  </div>
+</section>
+
+<section class="slide">
+  <div class="no"><b>09</b> / 09 &nbsp; 정리</div>
   <h2>구조는 두고, 선택권은 아이에게</h2>
   <div class="grid">
     <div><div class="lbl">활용할 장점</div><p>협동·협응, 인내심, 여러 신체 부위 사용, 풍선의 안전성</p></div>
@@ -256,7 +273,6 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
   <button class="nb" id="next" aria-label="다음">→</button>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
 const slides=$$('.slide');let cur=0;
@@ -277,7 +293,7 @@ const D={good:[['협동·협응','친구와 함께해야 풍선이 떨어지지 
 bad:[['발판 미고정','매트가 밀리면 미끄러질 수 있다'],['교사 지시만 수행','아이가 방법을 고르지 못한다'],['삼인일조 안전','넘어지거나 띠를 밟고 넘어질 수 있다'],['흥분','들떠서 규칙을 바르게 지키지 못한다'],['탐색 단계 부재','속도 맞추기 같은 문제 해결은 있으나, 방법을 정하고 비교하고 제안하는 탐색은 영상에서 뚜렷하지 않다']]};
 let tab='good';
 function drawA(){const c=$('#ana');c.innerHTML='';D[tab].forEach(([h,d])=>{const b=document.createElement('div');b.className='row-i';b.style.setProperty('--tc',tab==='good'?'var(--ok)':'var(--a)');b.innerHTML='<b>'+h+'</b><span>'+d+'</span>';c.appendChild(b)});
- $('#anaN').textContent=tab==='good'?'이 장점은 유아교육에서 그대로 활용할 수 있다.':'가장 큰 문제는 ‘탐색 단계 부재’ → 5번 슬라이드에서 집중 분석합니다.'}
+ $('#anaN').textContent=tab==='good'?'이 장점은 유아교육에서 그대로 활용할 수 있다.':''}
 $$('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;$$('.tab').forEach(x=>x.classList.toggle('on',x===b));drawA()});drawA();
 // 4
 const BR=[['비이동',6,'뻗기 · 구부리기 · 꼬기 · 앉기 · 균형잡기 · 회전하기',0],['이동',2,'걷기 · 뛰기',1],['조작',1,'잡기',1]];
@@ -285,8 +301,20 @@ function drawBars(){const c=$('#bars');c.innerHTML='';BR.forEach(([n,v,d,low])=>
  b.innerHTML='<b>'+n+'</b><i></i><span>'+v+'가지'+(low?' · 비교적 적게 나타남':'')+'</span>';b.onclick=()=>$('#barS').textContent=n+'동작 — '+d;c.appendChild(b);setTimeout(()=>b.querySelector('i').style.width=(v*11)+'%',50)})}
 // 5
 const ST=['지금: “이렇게 넘기세요.” 아이는 따라 하는 사람.','방법을 스스로 정하기 시작했어요. 선택이 생기면 움직임이 달라집니다.','여러 방법을 몸으로 실험 중. 이것이 탐색입니다.','친구에게 제안까지. 동작교육이 놀이가 되는 순간.'];
-function upd(){const v=+$('#sl').value,s=$$('.step');[1,34,67].forEach((m,i)=>s[i].classList.toggle('on',v>=m));$('#slS').textContent=ST[v<34?0:v<67?1:v<95?2:3]}
-$('#sl').oninput=upd;upd();
+const PC={
+t:{n:'교사 지시',g:[['체계적 지식 전달','문자, 수, 과학적 개념 등 기초적인 학업 지식을 효율적으로 전달할 수 있다.'],['예측 가능한 수업 관리','교사의 통제 하에 수업이 진행되므로 시간 관리와 집단 통제가 용이하다.'],['공통 성취도 확인','모든 유아에게 동일한 교육 목표를 제시하고 결과를 평가하기 수월하다.']],
+ b:[['수동성 유발','유아가 학습의 주체가 아닌 객체로 머물게 되어 수동적인 태도를 갖기 쉽다.'],['개별화 부족','모든 유아의 발달 속도나 흥미가 다름에도 불구하고 일률적인 진도로 진행된다.'],['창의성 제한','정해진 답이나 절차를 따르는 경우가 많아 자유로운 탐색과 창의적 사고가 제한될 수 있다.']]},
+c:{n:'유아 주도',g:[['높은 몰입도와 동기','자신이 좋아하는 놀이를 선택하기 때문에 내적 동기가 강하고 집중 시간이 길어진다.'],['자율성 및 창의성 발달','스스로 문제를 해결하고 대안을 탐색하는 과정에서 창의력과 독립심이 자란다.'],['사회성 및 정서 발달','또래와 놀이를 협상하고 규칙을 만드는 과정에서 의사소통 능력과 갈등 해결 능력이 향상된다.']],
+ b:[['체계성 부족','유아의 흥미에만 의존할 경우, 특정 영역(예: 수 학업 등)의 지식이 누락되거나 편중될 수 있다.'],['수업 통제의 어려움','유아마다 진행하는 활동이 달라 교사가 전체 학급을 관찰하고 안전을 확보하는 데 더 많은 에너지가 소요된다.'],['격차 발생 위험','자발적 참여도가 낮거나 상호작용 능력이 부족한 유아는 학습 과정에서 소외될 수 있다.']]}};
+let side='',stage=-1;
+function fade(el){el.classList.remove('fi');void el.offsetWidth;el.classList.add('fi')}
+function drawPC(){const d=PC[side],h=a=>a.map(([x,y])=>'<p><b>'+x+'</b> '+y+'</p>').join('');
+ $('#pc').innerHTML='<div class="pch">'+d.n+'</div><div><div class="lbl g">장점</div>'+h(d.g)+'</div><div><div class="lbl r">단점</div>'+h(d.b)+'</div>';fade($('#pc'))}
+function upd(moved){const v=+$('#sl').value,sd=v<50?'t':'c';
+ if(sd!==side){side=sd;drawPC()}
+ const st=v<34?0:v<67?1:v<95?2:3;
+ if(moved&&st!==stage){stage=st;$('#slS').textContent=ST[st];fade($('#slS'))}}
+$('#sl').oninput=()=>upd(true);upd(false);
 // 6
 const T=['묻기','정하기','해 보기','바꾸기'];
 const FS=['“풍선이 바닥에 닿지 않고 친구에게 가려면 어떻게 갈 수 있을까?” 교사가 먼저 묻습니다.','몸 부위 카드(손·머리·어깨·무릎·발·등·가슴)에서 모둠이 방법을 고릅니다.','정한 방법으로 풍선을 이어 전달해요. 걷기·도약하기·홉핑·스키핑 중에서 골라요. 달리지 않기!','다른 모둠의 방법을 따라 해 보고, 공(스펀지볼·탱탱볼)과 난이도를 골라요.'];
@@ -299,7 +327,6 @@ $('#go').onclick=async()=>{if(run)return;run=true;const g=$('#go');g.textContent
  for(let i=0;i<4;i++){at(i);await new Promise(r=>setTimeout(r,2300))}
  g.textContent='다시 보기';run=false};
 $$('.mt').forEach(b=>b.onclick=()=>{$('#cmp').dataset.m=b.dataset.m;$$('.mt').forEach(x=>x.classList.toggle('on',x===b))});
-try{new QRCode($('#qrb'),{text:'https://claude.ai/artifact/D58qK47Tcq7oYARiXo3Kj5',width:240,height:240,colorDark:'#111111',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M})}catch(e){$('#qrb').textContent='claude.ai/artifact/D58qK47Tcq7oYARiXo3Kj5'}
 show(0);
 </script>
 </body>
