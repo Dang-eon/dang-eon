@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>이 활동, 정말 유아 동작교육일까?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--sub:#55544f;--bg:#fafaf8;--fg:#111;--mut:#6c6b66;--line:#e4e3de;--a:#ff5a36;--ok:#1f9d6b;
+--fs-h1:clamp(2.4rem,6.2vw,5rem);--fs-h2:clamp(1.7rem,3.6vw,2.7rem);--fs-b:1.05rem;--pad:clamp(24px,7vw,110px);--btn:44px;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--sub:#c4c3bc;--bg:#121211;--fg:#f4f3ef;--mut:#8e8d87;--line:#2b2a27;--a:#ff7a5c;--ok:#4cc79a}}
+:root[data-theme="dark"]{--sub:#c4c3bc;--bg:#121211;--fg:#f4f3ef;--mut:#8e8d87;--line:#2b2a27;--a:#ff7a5c;--ok:#4cc79a}
+*{box-sizing:border-box}
+html,body{height:100%;margin:0}
+body{background:var(--bg);color:var(--fg);font-family:'Noto Sans KR',system-ui,-apple-system,'Malgun Gothic',sans-serif;font-size:var(--fs-b);line-height:1.65;font-weight:400;overflow:hidden;-webkit-font-smoothing:antialiased}
+button{font:inherit;color:inherit;background:none;border:0;cursor:pointer;padding:0}
+.bar-top{position:fixed;top:env(safe-area-inset-top,0px);left:0;height:2px;background:var(--a);width:0;transition:width .4s ease;z-index:6}
+.slide{position:absolute;inset:0;padding:clamp(56px,9vh,96px) var(--pad) 96px;display:none;flex-direction:column;justify-content:center;overflow-y:auto}
+.slide.on{display:flex;animation:in .5s ease}
+@keyframes in{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+.no{font-size:.78rem;letter-spacing:.18em;color:var(--mut);margin-bottom:18px;font-weight:500}
+.no b{color:var(--a)}
+h1{font-size:var(--fs-h1);line-height:1.12;font-weight:900;letter-spacing:-.03em;margin:0 0 .3em}
+h2{font-size:var(--fs-h2);line-height:1.25;font-weight:700;letter-spacing:-.02em;margin:0 0 .6em;max-width:20em}
+p{margin:.4em 0;max-width:38em}.mut{color:var(--mut)}.sm{font-size:.85rem}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:clamp(20px,3vw,48px);margin-top:12px}
+.lbl{font-size:.75rem;letter-spacing:.14em;color:var(--mut);margin-bottom:6px;font-weight:500}
+hr{border:0;border-top:1px solid var(--line);margin:18px 0}
+.tabs{display:flex;gap:24px;margin:4px 0 8px;border-bottom:1px solid var(--line)}
+.tab{padding:10px 0;color:var(--mut);font-weight:500;font-size:1.1rem;border-bottom:2px solid transparent;margin-bottom:-1px;min-height:var(--btn)}
+.tab.on{color:var(--fg);border-color:var(--a)}
+.row-i{display:block;width:100%;text-align:left;padding:14px 0;border-bottom:1px solid var(--line);min-height:var(--btn)}
+.row-i b{font-weight:500}.row-i span{display:none;color:var(--mut);font-size:.92rem;margin-top:4px}.row-i.open span{display:block}
+.row-i:after{content:"+";float:right;color:var(--mut)}.row-i.open:after{content:"–"}
+.list{max-width:44em}
+.chip{display:inline-flex;align-items:center;min-height:var(--btn);padding:0 18px;border:1px solid var(--line);border-radius:999px;margin:0 8px 8px 0;font-size:.92rem;transition:.2s}
+.chip:hover{border-color:var(--fg)}.chip.on{background:var(--fg);color:var(--bg);border-color:var(--fg)}
+.chip.cta{background:var(--a);border-color:var(--a);color:#fff}
+/* bars */
+.bar{display:flex;align-items:center;gap:16px;width:100%;margin:14px 0;text-align:left}
+.bar b{width:64px;font-weight:500;flex:none}.bar i{display:block;height:10px;border-radius:5px;background:var(--fg);width:0;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.bar.low i{background:var(--a)}.bar span{font-size:.85rem;color:var(--mut)}
+.note{border-left:2px solid var(--a);padding:2px 0 2px 16px;margin-top:20px;min-height:3.4em}
+/* slider */
+input[type=range]{width:100%;max-width:44em;accent-color:var(--a);height:var(--btn);margin:8px 0 0}
+.ends{display:flex;justify-content:space-between;max-width:44em;font-size:.8rem;color:var(--mut)}
+.steps{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;max-width:44em;margin-top:22px}
+.step{border-top:2px solid var(--line);padding-top:10px;opacity:.4;transition:.3s}.step.on{opacity:1;border-color:var(--ok)}
+.step b{font-weight:500;display:block}.step small{color:var(--mut)}
+/* stage */
+.stage{position:relative;height:120px;max-width:44em;margin:10px 0 4px}
+.mat{position:absolute;left:0;right:0;bottom:0;height:6px;border-radius:3px;background:var(--fg);transition:.3s}
+.mat.loose{background:var(--a);animation:sh .4s infinite alternate}
+@keyframes sh{from{transform:translateX(-6px)}to{transform:translateX(6px)}}
+.kid{position:absolute;bottom:14px;width:34px;height:34px;border-radius:50%;border:1.5px solid var(--fg);transform:translateX(-50%);display:grid;place-items:center;font-size:.78rem;font-weight:500}
+.ball{position:absolute;top:10px;width:26px;height:26px;border-radius:50%;background:var(--a);transform:translateX(-50%);transition:left .9s ease}
+.ball.sponge{border-radius:38%;background:#e8b923}.ball.bouncy{background:#2f7fe0}
+.dm{min-height:3.4em;margin:6px 0 12px}
+.row-i{display:grid;grid-template-columns:9.5em 1fr;gap:4px 20px;align-items:baseline;border-left:3px solid var(--tc,var(--line));padding:14px 0 14px 16px;cursor:default;min-height:0}
+.row-i b{font-weight:700;font-size:1.05rem}.row-i span{display:block;color:var(--sub);font-size:1rem;margin:0}
+.row-i:after,.row-i.open:after{content:none}.list{max-width:52em}
+.sg{margin:2px 0 8px;max-width:30em}.sg input{width:100%;min-height:var(--btn);border:1px solid var(--line);border-radius:999px;padding:0 18px;background:var(--bg);color:var(--fg);font:inherit;font-size:.92rem}.sg input:focus{outline:none;border-color:var(--a)}
+.ctl{display:flex;flex-wrap:wrap;gap:6px 36px}
+.sw{width:84px;height:104px;border-radius:50% 50% 48% 48%;background:var(--a);display:block;margin:6px 0 30px;position:relative;animation:fl 3.6s ease-in-out infinite}
+.sw:after{content:"";position:absolute;left:50%;top:100%;width:1.5px;height:30px;background:var(--mut)}
+@keyframes fl{50%{transform:translateY(-14px) rotate(3deg)}}
+.nav{position:fixed;left:0;right:0;bottom:0;display:flex;align-items:center;justify-content:space-between;padding:12px var(--pad);padding-bottom:calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,var(--bg) 45%);z-index:5}
+.nb{width:var(--btn);height:var(--btn);border:1px solid var(--line);border-radius:50%;font-size:1.05rem;background:var(--bg)}
+.nb:hover{border-color:var(--fg)}
+.mid{text-align:center;font-size:.78rem;color:var(--mut);letter-spacing:.08em}
+.tm{margin-top:2px;color:var(--mut)}
+/* ---- mobile ---- */
+@media (max-width:768px){
+ :root{--fs-h1:2.3rem;--fs-h2:1.55rem;--fs-b:.95rem;--pad:22px;--btn:40px}
+ .slide{padding-top:52px;padding-bottom:84px;justify-content:flex-start}
+ .no{margin-bottom:12px}
+ .grid{gap:18px}
+ .tabs{gap:18px}.chip{padding:0 14px;font-size:.85rem;margin:0 6px 6px 0}
+ .bar{gap:10px}.bar b{width:50px}
+ .steps{gap:10px}.step small{font-size:.72rem}
+ .kid{width:28px;height:28px;font-size:.7rem}.ball{width:22px;height:22px}
+ .stage{height:100px}.sw{width:64px;height:80px}
+ .ctl{gap:2px 20px}.row-i{grid-template-columns:1fr;gap:2px;padding:12px 0 12px 12px}.row-i b{font-size:1rem}.row-i span{font-size:.92rem}
+}
+@media (max-width:420px){.step small{display:none}}
+.flow{position:relative;display:grid;grid-template-columns:repeat(4,1fr);max-width:48em;padding-top:46px;margin:10px 0 6px}
+.flow .ball{top:6px}.flow .rail{position:absolute;left:12.5%;right:12.5%;top:18px;height:2px;background:var(--line)}
+.node{display:flex;flex-direction:column;align-items:center;gap:6px;text-align:center;opacity:.5;transition:.3s;min-height:var(--btn)}
+.node i{width:34px;height:34px;border-radius:50%;border:1.5px solid var(--fg);display:grid;place-items:center;font-style:normal;font-size:.8rem;font-weight:500}
+.node b{font-weight:700}.node.done{opacity:.85}.node.on{opacity:1}.node.on i{background:var(--a);border-color:var(--a);color:#fff}
+@media (max-width:768px){.node i{width:30px;height:30px}.node b{font-size:.85rem}.flow{padding-top:40px}}
+a{color:var(--a);text-underline-offset:3px;word-break:break-all}
+.ai1{max-width:none;font-size:clamp(.78rem,1.5vw,.95rem);margin:.4em 0}
+@media (min-width:769px){.ai1{white-space:nowrap}}
+</style>
+</head>
+<body>
+<div class="bar-top" id="prog"></div>
+
+<section class="slide" data-min="0:30">
+  <div class="no"><b>01</b> / 07 &nbsp; 유아 동작교육 콘텐츠 비평 · 5세</div>
+  <button class="sw" id="sw" aria-label="풍선"></button>
+  <h1>이 활동,<br>정말 유아 동작교육일까?</h1>
+  <p class="mut" id="swt">풍선을 눌러 보세요.</p>
+</section>
+
+<section class="slide" data-min="1:00">
+  <div class="no"><b>02</b> / 07 &nbsp; 콘텐츠 소개</div>
+  <h2>풍선을 몸 곳곳으로 이어 전달하는 협동 놀이</h2>
+  <div class="grid">
+    <div><div class="lbl">대상</div><p>5세 유아</p><div class="lbl" style="margin-top:20px">출처</div><p>“풍선하나만 있어도 즐거운 수업이 됩니다^^”<br><a href="https://youtube.com/shorts/tf0vu8M7JFY?si=8pjWvHVqqzJiOCEe" target="_blank" rel="noopener">youtube.com/shorts/tf0vu8M7JFY</a></p></div>
+    <div><div class="lbl">활동 방법</div><p>1. 매트 위에서 짝·삼인일조로 선다</p><p>2. 풍선을 손, 머리 위, 다리 사이, 다리로 전달한다</p><p>3. 삼인일조는 가슴과 등 사이에 풍선을 끼우고 한 줄로 달린다</p></div>
+  </div>
+  <hr><p class="mut">아이들은 움직임을 ‘선택’하고 있을까, ‘지시를 수행’하고 있을까?</p>
+</section>
+
+<section class="slide" data-min="1:30">
+  <div class="no"><b>03</b> / 07 &nbsp; 구체적인 장면 분석</div>
+  <h2>좋은 점과 아쉬운 점</h2>
+  <div class="tabs"><button class="tab on" data-t="good">좋은 점</button><button class="tab" data-t="bad">아쉬운 점</button></div>
+  <div class="list" id="ana"></div>
+  <p class="mut sm" id="anaN" style="margin-top:14px"></p>
+</section>
+
+<section class="slide" data-min="1:00">
+  <div class="no"><b>04</b> / 07 &nbsp; 기본동작 분석</div>
+  <h2>움직임이 한쪽으로 치우쳐 있다</h2>
+  <p class="mut sm">막대를 누르면 동작이 보여요 · 영상에서 관찰된 동작 종류 수</p>
+  <div id="bars" style="max-width:44em"></div>
+  <div class="note" id="barS">비이동 동작이 중심이고, 이동·조작 동작은 비교적 적게 나타난다.</div>
+</section>
+
+<section class="slide" data-min="1:30">
+  <div class="no"><b>05</b> / 07 &nbsp; 가장 큰 문제</div>
+  <h2>“풍선을 어떻게 움직일까?”는 누가 정하나?</h2>
+  <p class="mut sm">슬라이더로 결정권을 교사에서 유아에게 옮겨 보세요.</p>
+  <input type="range" id="sl" min="0" max="100" value="0" aria-label="결정권">
+  <div class="ends"><span>교사 지시</span><span>유아 주도</span></div>
+  <div class="steps" id="steps">
+    <div class="step"><b>1. 스스로 정하기</b><small>어떻게 넘길지 내가 정한다</small></div>
+    <div class="step"><b>2. 방법 비교</b><small>여러 방법을 시도한다</small></div>
+    <div class="step"><b>3. 친구에게 제안</b><small>“이렇게 해 보자!”</small></div>
+  </div>
+  <div class="note" id="slS"></div>
+</section>
+
+<section class="slide" data-min="3:00">
+  <div class="no"><b>06</b> / 07 &nbsp; 새로 구상한 활동</div>
+  <h2>풍선 여행 길 만들기</h2>
+  <p class="mut">만 5세 · 3~4명 모둠 · 시연: 발표자 2명 (교사 역 / 유아 역)</p>
+  <div class="flow" id="flow">
+    <div class="rail"></div>
+    <div class="ball" id="ball" style="left:12.5%"></div>
+    <button class="node" data-i="0"><i>1</i><b>묻기</b></button>
+    <button class="node" data-i="1"><i>2</i><b>정하기</b></button>
+    <button class="node" data-i="2"><i>3</i><b>해 보기</b></button>
+    <button class="node" data-i="3"><i>4</i><b>바꾸기</b></button>
+  </div>
+  <div class="note" id="fs"></div>
+  <div style="margin-top:12px"><button class="chip cta" id="go">전달 시작</button></div>
+  <div class="grid">
+    <div><div class="lbl">부족했던 동작 보강</div>
+      <p><b>이동</b> 풍선을 가슴과 등 사이에 끼우고 천천히 걷기</p>
+      <p><b>조작</b> 스펀지볼·탱탱볼 던져 받기, 굴리기, 튕겨 받기</p>
+      <div class="lbl" style="margin-top:20px">준비물</div>
+      <p>풍선, 스펀지볼, 탱탱볼, 고정 매트, 몸 부위 카드</p></div>
+    <div><div class="lbl">만 5세에게 맞는 이유</div>
+      <p>신체 조절·균형이 자라는 시기 → 달리기 대신 걷기, 난이도 선택</p>
+      <p>또래와 협동하고 규칙을 이해하는 시기 → 모둠 협력, 규칙은 한 가지(풍선 떨어뜨리지 않기)</p>
+      <p>생각을 말로 제안하는 시기 → 방법을 아이가 직접 정함</p>
+      <div class="lbl" style="margin-top:20px">안전</div>
+      <p>매트 고정 · 넓은 간격 · 떨어져도 “다시 해 보자!”</p></div>
+  </div>
+</section>
+
+<section class="slide" data-min="1:00">
+  <div class="no"><b>07</b> / 07 &nbsp; 정리</div>
+  <h2>구조는 두고, 선택권은 아이에게</h2>
+  <div class="grid">
+    <div><div class="lbl">활용할 장점</div><p>협동·협응, 인내심, 여러 신체 부위 사용, 풍선의 안전성</p></div>
+    <div><div class="lbl">바꾼 것</div><p>고정 매트 · 난이도 선택지 · “또 어떻게 넘길까?” 질문 · 이동·조작 동작 보강</p></div>
+    <div><div class="lbl">유아 흥미와 연결</div><p>“우리가 만든 방법”이 되는 순간, 놀이는 아이의 것이 된다</p></div>
+  </div>
+  <hr>
+  <div class="lbl">AI 활용 표기</div>
+  <p class="ai1">웹페이지 구성·디자인 제작에 AI를 사용했고, 분석 내용은 팀이 관찰·작성한 자료를 바탕으로 다듬었습니다.</p>
+</section>
+
+<div class="nav">
+  <button class="nb" id="prev" aria-label="이전">←</button>
+  <div class="mid"><span id="cnt"></span> · 권장 <span id="rec"></span><br><button class="tm" id="tm">00:00 ▸ 시작</button></div>
+  <button class="nb" id="next" aria-label="다음">→</button>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const slides=$$('.slide');let cur=0;
+function show(i){cur=Math.max(0,Math.min(slides.length-1,i));slides.forEach((s,k)=>s.classList.toggle('on',k===cur));
+ $('#cnt').textContent=(cur+1)+' / '+slides.length;$('#rec').textContent=slides[cur].dataset.min;
+ $('#prog').style.width=((cur+1)/slides.length*100)+'%';if(cur===3)setTimeout(drawBars,60)}
+$('#prev').onclick=()=>show(cur-1);$('#next').onclick=()=>show(cur+1);
+addEventListener('keydown',e=>{const t=e.target;if(t.type==='text')return;
+ if((e.key==='ArrowRight'||e.key==='PageDown')&&t.type!=='range')show(cur+1);
+ if((e.key==='ArrowLeft'||e.key==='PageUp')&&t.type!=='range')show(cur-1)});
+let tx=0;addEventListener('touchstart',e=>tx=e.touches[0].clientX,{passive:true});
+addEventListener('touchend',e=>{if(e.target.type==='range')return;const d=e.changedTouches[0].clientX-tx;if(Math.abs(d)>70)show(cur+(d<0?1:-1))},{passive:true});
+let iv=null;$('#tm').onclick=()=>{if(iv){clearInterval(iv);iv=null;return}const b=Date.now();
+ iv=setInterval(()=>{const s=Math.floor((Date.now()-b)/1000);$('#tm').textContent=String(Math.floor(s/60)).padStart(2,'0')+':'+String(s%60).padStart(2,'0')+' ❚❚'},500)};
+// 1
+const m1=['통통, 살살 넘겨요.','가볍고 느려서 안전한 풍선.','그런데, 넘기는 방법은 누가 정할까요?'];let n1=0;
+$('#sw').onclick=()=>$('#swt').textContent=m1[n1++%3];
+// 3
+const D={good:[['협동·협응','친구와 함께해야 풍선이 떨어지지 않는다'],['인내심','속도를 맞추고 기다리는 경험'],['다양한 신체 부위','손, 머리 위, 다리 사이, 다리, 삼인일조'],['매트가 있음','바닥 충격을 줄여 준다'],['가벼운 풍선','느리고 가벼워 부상 위험이 적다'],['성취감','동작을 해낼 때마다 느끼는 뿌듯함']],
+bad:[['발판 미고정','매트가 밀리면 미끄러질 수 있다'],['교사 지시만 수행','아이가 방법을 고르지 못한다'],['삼인일조 안전','넘어지거나 띠를 밟고 넘어질 수 있다'],['흥분','들떠서 규칙을 바르게 지키지 못한다'],['탐색 단계 부재','속도 맞추기 같은 문제 해결은 있으나, 방법을 정하고 비교하고 제안하는 탐색은 영상에서 뚜렷하지 않다']]};
+let tab='good';
+function drawA(){const c=$('#ana');c.innerHTML='';D[tab].forEach(([h,d])=>{const b=document.createElement('div');b.className='row-i';b.style.setProperty('--tc',tab==='good'?'var(--ok)':'var(--a)');b.innerHTML='<b>'+h+'</b><span>'+d+'</span>';c.appendChild(b)});
+ $('#anaN').textContent=tab==='good'?'이 장점은 유아교육에서 그대로 활용할 수 있다.':'가장 큰 문제는 ‘탐색 단계 부재’ → 5번 슬라이드에서 집중 분석합니다.'}
+$$('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.t;$$('.tab').forEach(x=>x.classList.toggle('on',x===b));drawA()});drawA();
+// 4
+const BR=[['비이동',4,'뻗기 · 구부리기 · 꼬기 · 앉기',0],['이동',2,'걷기 · 뛰기',1],['조작',1,'잡기',1]];
+function drawBars(){const c=$('#bars');c.innerHTML='';BR.forEach(([n,v,d,low])=>{const b=document.createElement('button');b.className='bar'+(low?' low':'');
+ b.innerHTML='<b>'+n+'</b><i></i><span>'+v+'가지</span>';b.onclick=()=>$('#barS').textContent=n+'동작 — '+d+(low?' (비교적 적게 나타남)':'');c.appendChild(b);setTimeout(()=>b.querySelector('i').style.width=(v*16)+'%',50)})}
+// 5
+const ST=['지금: “이렇게 넘기세요.” 아이는 따라 하는 사람.','방법을 스스로 정하기 시작했어요. 선택이 생기면 움직임이 달라집니다.','여러 방법을 몸으로 실험 중. 이것이 탐색입니다.','친구에게 제안까지. 동작교육이 놀이가 되는 순간.'];
+function upd(){const v=+$('#sl').value,s=$$('.step');[1,34,67].forEach((m,i)=>s[i].classList.toggle('on',v>=m));$('#slS').textContent=ST[v<34?0:v<67?1:v<95?2:3]}
+$('#sl').oninput=upd;upd();
+// 6
+const T=['묻기','정하기','해 보기','바꾸기'];
+const FS=['“풍선이 바닥에 닿지 않고 친구에게 가려면 어떻게 갈 수 있을까?” 교사가 먼저 묻습니다.','몸 부위 카드(손·머리·어깨·무릎·발·등·가슴)에서 모둠이 방법을 고릅니다.','정한 방법으로 풍선을 이어 전달해요. 걷기만, 달리지 않기!','다른 모둠의 방법을 따라 해 보고, 공(스펀지볼·탱탱볼)과 난이도를 골라요.'];
+const nodes=$$('.node'),ball=$('#ball');let run=false;
+function at(i){ball.style.left=(12.5+i*25)+'%';nodes.forEach((n,k)=>{n.classList.toggle('on',k===i);n.classList.toggle('done',k<i)});$('#fs').textContent=(i+1)+'단계 · '+T[i]+' — '+FS[i]}
+$('#fs').textContent='‘전달 시작’을 누르면 풍선이 순서대로 지나가요. 단계를 눌러도 됩니다.';
+nodes.forEach((n,k)=>n.onclick=()=>{if(!run)at(k)});
+$('#go').onclick=async()=>{if(run)return;run=true;const g=$('#go');g.textContent='진행 중…';
+ ball.style.transition='none';at(0);await new Promise(r=>setTimeout(r,60));ball.style.transition='';
+ for(let i=0;i<4;i++){at(i);await new Promise(r=>setTimeout(r,2300))}
+ g.textContent='다시 보기';run=false};
+show(0);
+</script>
+</body>
+</html>
