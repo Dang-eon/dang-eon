@@ -312,7 +312,7 @@ function upd(moved){const v=+$('#sl').value,sd=v<50?'t':'c';
 $('#sl').oninput=()=>upd(true);upd(false);
 // 6
 const T=['묻기','정하기','해 보기','바꾸기'];
-const FS=['“풍선이 바닥에 닿지 않고 친구에게 가려면 어떻게 갈 수 있을까?” 교사가 먼저 묻습니다.','모둠이 원하는 동작을 생각해봅시다.','정한 방법으로 풍선을 이어 전달해요. 걷기·도약하기·홉핑·스키핑 중에서 골라요.','다른 모둠의 방법을 따라 해 보고, 공(스펀지볼·탱탱볼)과 난이도를 골라요.'];
+const FS=['“풍선이 바닥에 닿지 않고 친구에게 가려면 어떻게 갈 수 있을까?” 교사가 먼저 묻습니다.','모둠이 원하는 동작을 생각해봅시다.','정한 방법으로 풍선을 이어 전달해요. 예) 걷기·도약하기·홉핑·스키핑 등','다른 모둠의 방법을 따라 해봐요.'];
 const nodes=$$('.node'),ball=$('#ball');let run=false;
 function at(i){ball.style.left=(12.5+i*25)+'%';nodes.forEach((n,k)=>{n.classList.toggle('on',k===i);n.classList.toggle('done',k<i)});$('#fs').textContent=(i+1)+'단계 · '+T[i]+' — '+FS[i]}
 $('#fs').textContent='‘전달 시작’을 누르면 풍선이 순서대로 지나가요. 단계를 눌러도 됩니다.';
