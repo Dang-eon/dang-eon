@@ -132,6 +132,7 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
 .pch{grid-column:1/-1;font-weight:900;font-size:1.5rem}.lbl.g{color:var(--ok);font-weight:700}.lbl.r{color:var(--a);font-weight:700}
 .fi{animation:in .5s ease}
 @media (max-width:768px){.pc{grid-template-columns:1fr;gap:4px}.pc p{font-size:1rem}.pch{font-size:1.3rem}.team{font-size:.95rem}}
+.pch span{font-weight:400;font-size:1.1rem;color:var(--mut);margin-left:12px}
 </style>
 </head>
 <body>
@@ -168,7 +169,6 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
         <iframe src="https://www.youtube.com/embed/tf0vu8M7JFY?autoplay=1&amp;mute=1&amp;loop=1&amp;playlist=tf0vu8M7JFY&amp;controls=0&amp;playsinline=1&amp;rel=0" title="풍선하나만 있어도 즐거운 수업이 됩니다" allow="autoplay; encrypted-media; picture-in-picture" loading="lazy" tabindex="-1"></iframe>
         <a class="vov" href="https://youtube.com/shorts/tf0vu8M7JFY?si=8pjWvHVqqzJiOCEe" target="_blank" rel="noopener" aria-label="유튜브에서 영상 보기"></a>
       </div>
-      <p class="vcap">영상을 누르면 유튜브로 이동해요 · 소리 꺼짐</p>
     </div>
   </div>
 </section>
@@ -196,7 +196,6 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
   <input type="range" id="sl" min="0" max="100" value="0" aria-label="결정권">
   <div class="ends"><span>교사 지시</span><span>유아 주도</span></div>
   <div class="pc" id="pc"></div>
-  <div class="note" id="slS"></div>
 </section>
 
 <section class="slide">
@@ -233,7 +232,7 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
       <p><b>조작</b> 스펀지볼·탱탱볼 던져 받기, 굴리기, 튕겨 받기</p>
       </div>
     <div><div class="lbl">준비물</div>
-      <p>풍선, 스펀지볼, 탱탱볼, 전기테이프, 몸 부위 카드</p></div>
+      <p>풍선, 스펀지볼, 탱탱볼, 전기테이프</p></div>
   </div>
 </section>
 
@@ -260,7 +259,6 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
   <div class="grid">
     <div><div class="lbl">활용할 장점</div><p>협동·협응, 인내심, 여러 신체 부위 사용, 풍선의 안전성</p></div>
     <div><div class="lbl">바꾼 것</div><p>전기테이프 바닥 표시 · 난이도 선택지 · “또 어떻게 넘길까?” 질문 · 이동·조작 동작 보강</p></div>
-    <div><div class="lbl">유아 흥미와 연결</div><p>“우리가 만든 방법”이 되는 순간, 놀이는 아이의 것이 된다</p></div>
   </div>
   <hr>
   <div class="lbl">AI 활용 표기</div>
@@ -300,24 +298,21 @@ const BR=[['비이동',6,'뻗기 · 구부리기 · 꼬기 · 앉기 · 균형�
 function drawBars(){const c=$('#bars');c.innerHTML='';BR.forEach(([n,v,d,low])=>{const b=document.createElement('button');b.className='bar'+(low?' low':'');
  b.innerHTML='<b>'+n+'</b><i></i><span>'+v+'가지'+(low?' · 비교적 적게 나타남':'')+'</span>';b.onclick=()=>$('#barS').textContent=n+'동작 — '+d;c.appendChild(b);setTimeout(()=>b.querySelector('i').style.width=(v*11)+'%',50)})}
 // 5
-const ST=['지금: “이렇게 넘기세요.” 아이는 따라 하는 사람.','방법을 스스로 정하기 시작했어요. 선택이 생기면 움직임이 달라집니다.','여러 방법을 몸으로 실험 중. 이것이 탐색입니다.','친구에게 제안까지. 동작교육이 놀이가 되는 순간.'];
 const PC={
-t:{n:'교사 지시',g:[['체계적 지식 전달','문자, 수, 과학적 개념 등 기초적인 학업 지식을 효율적으로 전달할 수 있다.'],['예측 가능한 수업 관리','교사의 통제 하에 수업이 진행되므로 시간 관리와 집단 통제가 용이하다.'],['공통 성취도 확인','모든 유아에게 동일한 교육 목표를 제시하고 결과를 평가하기 수월하다.']],
+t:{n:'교사 지시',s:'아이는 따라하는 사람',g:[['체계적 지식 전달','문자, 수, 과학적 개념 등 기초적인 학업 지식을 효율적으로 전달할 수 있다.'],['예측 가능한 수업 관리','교사의 통제 하에 수업이 진행되므로 시간 관리와 집단 통제가 용이하다.'],['공통 성취도 확인','모든 유아에게 동일한 교육 목표를 제시하고 결과를 평가하기 수월하다.']],
  b:[['수동성 유발','유아가 학습의 주체가 아닌 객체로 머물게 되어 수동적인 태도를 갖기 쉽다.'],['개별화 부족','모든 유아의 발달 속도나 흥미가 다름에도 불구하고 일률적인 진도로 진행된다.'],['창의성 제한','정해진 답이나 절차를 따르는 경우가 많아 자유로운 탐색과 창의적 사고가 제한될 수 있다.']]},
-c:{n:'유아 주도',g:[['높은 몰입도와 동기','자신이 좋아하는 놀이를 선택하기 때문에 내적 동기가 강하고 집중 시간이 길어진다.'],['자율성 및 창의성 발달','스스로 문제를 해결하고 대안을 탐색하는 과정에서 창의력과 독립심이 자란다.'],['사회성 및 정서 발달','또래와 놀이를 협상하고 규칙을 만드는 과정에서 의사소통 능력과 갈등 해결 능력이 향상된다.']],
+c:{n:'유아 주도',s:'아이 스스로 함',g:[['높은 몰입도와 동기','자신이 좋아하는 놀이를 선택하기 때문에 내적 동기가 강하고 집중 시간이 길어진다.'],['자율성 및 창의성 발달','스스로 문제를 해결하고 대안을 탐색하는 과정에서 창의력과 독립심이 자란다.'],['사회성 및 정서 발달','또래와 놀이를 협상하고 규칙을 만드는 과정에서 의사소통 능력과 갈등 해결 능력이 향상된다.']],
  b:[['체계성 부족','유아의 흥미에만 의존할 경우, 특정 영역(예: 수 학업 등)의 지식이 누락되거나 편중될 수 있다.'],['수업 통제의 어려움','유아마다 진행하는 활동이 달라 교사가 전체 학급을 관찰하고 안전을 확보하는 데 더 많은 에너지가 소요된다.'],['격차 발생 위험','자발적 참여도가 낮거나 상호작용 능력이 부족한 유아는 학습 과정에서 소외될 수 있다.']]}};
 let side='',stage=-1;
 function fade(el){el.classList.remove('fi');void el.offsetWidth;el.classList.add('fi')}
 function drawPC(){const d=PC[side],h=a=>a.map(([x,y])=>'<p><b>'+x+'</b> '+y+'</p>').join('');
- $('#pc').innerHTML='<div class="pch">'+d.n+'</div><div><div class="lbl g">장점</div>'+h(d.g)+'</div><div><div class="lbl r">단점</div>'+h(d.b)+'</div>';fade($('#pc'))}
+ $('#pc').innerHTML='<div class="pch">'+d.n+'<span>'+d.s+'</span></div><div><div class="lbl g">장점</div>'+h(d.g)+'</div><div><div class="lbl r">단점</div>'+h(d.b)+'</div>';fade($('#pc'))}
 function upd(moved){const v=+$('#sl').value,sd=v<50?'t':'c';
- if(sd!==side){side=sd;drawPC()}
- const st=v<34?0:v<67?1:v<95?2:3;
- if(moved&&st!==stage){stage=st;$('#slS').textContent=ST[st];fade($('#slS'))}}
+ if(sd!==side){side=sd;drawPC()}}
 $('#sl').oninput=()=>upd(true);upd(false);
 // 6
 const T=['묻기','정하기','해 보기','바꾸기'];
-const FS=['“풍선이 바닥에 닿지 않고 친구에게 가려면 어떻게 갈 수 있을까?” 교사가 먼저 묻습니다.','몸 부위 카드(손·머리·어깨·무릎·발·등·가슴)에서 모둠이 방법을 고릅니다.','정한 방법으로 풍선을 이어 전달해요. 걷기·도약하기·홉핑·스키핑 중에서 골라요. 달리지 않기!','다른 모둠의 방법을 따라 해 보고, 공(스펀지볼·탱탱볼)과 난이도를 골라요.'];
+const FS=['“풍선이 바닥에 닿지 않고 친구에게 가려면 어떻게 갈 수 있을까?” 교사가 먼저 묻습니다.','모둠이 원하는 동작을 생각해봅시다.','정한 방법으로 풍선을 이어 전달해요. 걷기·도약하기·홉핑·스키핑 중에서 골라요.','다른 모둠의 방법을 따라 해 보고, 공(스펀지볼·탱탱볼)과 난이도를 골라요.'];
 const nodes=$$('.node'),ball=$('#ball');let run=false;
 function at(i){ball.style.left=(12.5+i*25)+'%';nodes.forEach((n,k)=>{n.classList.toggle('on',k===i);n.classList.toggle('done',k<i)});$('#fs').textContent=(i+1)+'단계 · '+T[i]+' — '+FS[i]}
 $('#fs').textContent='‘전달 시작’을 누르면 풍선이 순서대로 지나가요. 단계를 눌러도 됩니다.';
