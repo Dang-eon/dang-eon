@@ -228,8 +228,9 @@ a{color:var(--a);text-underline-offset:3px;word-break:break-all}
   <div style="margin-top:12px"><button class="chip cta" id="go">전달 시작</button></div>
   <div class="grid">
     <div><div class="lbl">부족했던 동작 보강</div>
-      <p><b>이동</b> 도약하기·홉핑·스키핑하며 풍선 옮기기, 풍선을 가슴과 등 사이에 끼우고 천천히 걷기</p>
-      <p><b>조작</b> 스펀지볼·탱탱볼 던져 받기, 굴리기, 튕겨 받기</p>
+      <p>다리 사이에 공 끼워서 <b>두발 모아뛰기</b></p>
+      <p>두 손으로 <b>위로 공 튕기기</b></p>
+      <p>뒤로 앉은 상태에서 <b>허리 옆으로 전달하기</b></p>
       </div>
     <div><div class="lbl">준비물</div>
       <p>풍선, 스펀지볼, 탱탱볼, 전기테이프</p></div>
@@ -312,7 +313,7 @@ function upd(moved){const v=+$('#sl').value,sd=v<50?'t':'c';
 $('#sl').oninput=()=>upd(true);upd(false);
 // 6
 const T=['묻기','정하기','해 보기','바꾸기'];
-const FS=['“풍선이 바닥에 닿지 않고 친구에게 가려면 어떻게 갈 수 있을까?” 교사가 먼저 묻습니다.','모둠이 원하는 동작을 생각해봅시다.','정한 방법으로 풍선을 이어 전달해요. 예) 걷기·도약하기·홉핑·스키핑 등','다른 모둠의 방법을 따라 해봐요.'];
+const FS=['“풍선이 바닥에 닿지 않고 친구에게 가려면 어떻게 갈 수 있을까?” 교사가 먼저 묻습니다.','모둠이 원하는 동작을 생각해봅시다.','정한 방법으로 풍선을 이어 전달해요.','다른 모둠의 방법을 따라 해봐요.'];
 const nodes=$$('.node'),ball=$('#ball');let run=false;
 function at(i){ball.style.left=(12.5+i*25)+'%';nodes.forEach((n,k)=>{n.classList.toggle('on',k===i);n.classList.toggle('done',k<i)});$('#fs').textContent=(i+1)+'단계 · '+T[i]+' — '+FS[i]}
 $('#fs').textContent='‘전달 시작’을 누르면 풍선이 순서대로 지나가요. 단계를 눌러도 됩니다.';
